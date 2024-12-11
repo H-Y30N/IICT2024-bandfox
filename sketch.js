@@ -374,7 +374,7 @@ function draw() {
       break;
 
     case 6: //bass explanation
-      //image(bassEx,0,0);
+      image(bassEx,0,0);
       break;
 
     case 7: //bass game
