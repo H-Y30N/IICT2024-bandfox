@@ -316,8 +316,8 @@ function draw() {
       }
 
       let drumDifferent = sqrt(
-        (realGame.averageBPM.toFixed(2) - MG.targetBPM) *
-          (realGame.averageBPM.toFixed(2) - MG.targetBPM)
+        (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM) *
+          (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM)
       );
       if (drumDifferent <= 20) drumFinal = 10;
       else if (drumDifferent > 20 && drumDifferent < 50) drumFinal = 5;
