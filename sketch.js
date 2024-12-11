@@ -104,7 +104,7 @@ function preload() {
   backgroundImage = loadImage("assets/backgroundImage.png");
   drumEx = loadImage("assets/drumEx.png");
   keyboardEx = loadImage("assets/keyboardEx.png");
-  //bassEx = loadImage("assets/bassEx.png");
+  bassEx = loadImage("assets/bassEx.png");
   guitarEx = loadImage("assets/guitarEx.png");
 
   drumPractice = loadImage("assets/drumPractice.png");
