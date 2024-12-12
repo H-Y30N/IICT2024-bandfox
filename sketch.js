@@ -4,9 +4,7 @@ let currentDialogueIndex = 0; // 현재 대화 배열의 인덱스
 let displayedText = ""; // 현재까지 화면에 표시된 텍스트
 let currentCharIndex = 0; // 현재 대화의 문자 인덱스
 let isDisplaying = false; // 현재 텍스트 출력 중인지 여부
-let stageChange = false;
-let nowTalking = false;
-let initializeDialogue = false;
+let sceneChange = false;
 
 let stage = 0;
 
@@ -15,6 +13,9 @@ let drumFinal; //드럼 최종 스코어
 let bassFinal; //베이스 최종 스코어
 let keyboardFinal; //키보드 최종 스코어
 let guitarFinal; //기타 최종 스코어
+
+//게임 중에는 넘어가지 않게 하는 boolean. 각 파이널 스코어가 정산되어야 엔터가 먹히게 합니다.
+let gaming = false;
 
 //이미지 파일
 let openingImage; //오프닝
@@ -30,9 +31,23 @@ let keyboardRabbit; //토끼 이미지
 let guitarCat; //고양이 이미지
 let backgroundImage; //기본 배경
 
+//대사창 파일
+let dialogueFox;
+let dialogueBear;
+let dialogueCat;
+let dialogueCopy;
+let dialogueRabbit;
+
 //사운드 파일
 let song = [];
 let songPlay = false;
+let foxVoice;
+let bearVoice;
+let rabbitVoice;
+let catVoice;
+let copyVoice;
+
+let saying = false;
 
 //드럼 관련 전역변수
 let snareImage;
@@ -114,10 +129,15 @@ function preload() {
   drumPracticeStart = loadImage("assets/drumPracticeStart.png");
   drumPracticeComplete = loadImage("assets/drumPracticeComplete.png");
 
+  dialogueFox = loadImage("assets/dialogueFox.png");
+  dialogueBear = loadImage("assets/dialogueBear.png");
+  dialogueCat = loadImage("assets/dialogueCat.png");
+  dialogueCopy = loadImage("assets/dialogueCopy.png");
+  dialogueRabbit = loadImage("assets/dialogueRabbit.png");
+
   //loadfonts
-  hongcha = loadFont("assets/hongcha.ttf");
-  leeseoyun = loadFont("assets/leeseoyun.ttf");
   kossuyeom = loadFont("assets/kossuyeom.otf");
+  choice = loadFont("assets/elandChoiceM.ttf");
 
   //키보드 관련 프리로드
   for (let i = 0; i < 7; i++) {
@@ -140,12 +160,18 @@ function preload() {
   //sfx
   click = loadSound("assets/click.wav");
   correct = loadSound("assets/correct.wav");
+  foxVoice = loadSound("assets/foxVoice.mp3");
+  bearVoice = loadSound("assets/bearVoice.wav");
+  rabbitVoice = loadSound("assets/rabbitVoice.ogg");
+  copyVoice = loadSound("assets/copyVoice.wav");
+  catVoice = loadSound("assets/catVoice.mp3");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
   bgmPlaying = false;
-  envelope = new p5.Envelope();
-  envelope.setRange(1.0, 0.0);
+  env = new p5.Envelope();
+  env.setADSR(0.1, 0.2, 0.5, 3); // Attack: 0.1s, Decay: 0.2s, Sustain: 0.5, Release: 3s
+  env.setRange(1, 0.2); // 시작 볼륨: 1, 최저 볼륨: 0.2
 }
 
 function setup() {
@@ -170,11 +196,7 @@ function setup() {
 }
 
 function draw() {
-  //BGM 플레이 코드 (추가)
-  if (!bgmPlaying) {
-    bgm.loop();
-    bgmPlaying = true;
-  }
+  console.log(drumFinal, bassFinal, keyboardFinal, guitarFinal);
 
   textFont(kossuyeom);
   switch (stage) {
@@ -190,89 +212,102 @@ function draw() {
       strokeWeight(0);
       textSize(16);
       fill(50);
-      text("계속하려면 → 키를 누르세요.", 150, height / 2);
+      text("계속하려면 ENTER 키를 누르세요.", 150, height / 2);
+
+      //BGM 플레이 코드 (추가)
+      if (!bgmPlaying) {
+        bgm.loop();
+        bgm.amp(env);
+        env.triggerAttack();
+        bgmPlaying = true;
+      }
+
+      sceneChange = true;
 
       break;
 
     case 1: //Game Intro
       console.log(currentDialogueIndex);
+
+      if (sceneChange) {
+        initializeDialogue();
+        sceneChange = false;
+        console.log("대화 초기화");
+      }
       image(gameIntroImage, 0, 0);
-      textAlign(LEFT, CENTER);
-      textSize(20);
-      textFont(leeseoyun);
+      image(dialogueFox, 0, 0);
+      textSize(18);
+      textFont(choice);
       dialogues = [
         "안녕! 나는 여우. \n락의 피가 들끓는 락앤롤한 여우지.",
-        "나는 아직 인간들의 오해에 \n상처받았던 지난날을 기억해.",
-        "여우들이 “What does the\nfox say”처럼 울지만은 않는다고! \n나도 더 멋진 노래를 할 줄 안다고!",
-        "꼭 밴드로 성공해서,\n여우가 “하티하티 하티호!”라고만\n울지는 않는다는 사실을 \n전세계에 증명할거야!",
-        "맞다, 밴드 멤버 소개를 까먹었네. \n여기는 우리 밴드 멤버들이야.",
-        "드러머 북극곰! \n북극에서 온 진짜 야생 드러머야. \n실력 하나만큼은 확실하다구.", //5 곰
-        "베이시스트 카피바라! \n어디서나 존재감이 드러나는 \n인싸 of 인싸. \n취미는 탑 쌓기래.", //6 카피바라
-        "기타리스트 고양이! \n어디로 튈지 모를 \n4차원 매력의 소유자랄까? \n가장 좋아하는 간식은 츄르.", //7 고양이
-        "그리고 키보디스트 비스카차. \n언제나 선글라스를 \n가지고 다니는 멋쟁이지!", //8 토끼
-        "마지막으로 보컬이자 프론트맨인 나, \n여우가 있어.", //9 여우
-        "이 각박한 인간 중심 사회에서, \n우리가 동물 밴드로 잘 해나갈 수\n 있도록 응원해 줘!",
-        "멋진 밴드가 되려면 \n먼저 자작곡을 쓸 줄 알아야 해.",
+        "꼭 밴드로 성공해서,여우가 “하티하티 하티호!”라고만\n울지는 않는다는 사실을 전세계에 증명할거야!",
+        "우리 밴드를 소개해줄게! \n여기는 우리 밴드 멤버들이야.",
+        "드러머 북극곰! \n북극에서 온 진짜 야생 드러머야. 실력 하나만큼은 확실하다구.", //3 곰
+        "베이시스트 카피바라! \n어디서나 존재감이 드러나는 인싸 of 인싸. 취미는 탑 쌓기래.", //4 카피바라
+        "기타리스트 고양이! \n어디로 튈지 모를 4차원 매력의 소유자랄까? 가장 좋아하는 간식은 츄르.", //5 고양이
+        "그리고 키보디스트 비스카차. \n언제나 선글라스를 가지고 다니는 멋쟁이지!", //6 토끼
+        "마지막으로 보컬이자 프론트맨인 나, \n여우가 있어.", //7 여우
+        "이 각박한 인간 중심 사회에서, \n우리가 동물 밴드로 잘 해나갈 수 있도록 응원해 줘!",
+        "멋진 밴드가 되려면 먼저 자작곡을 쓸 줄 알아야 해.",
         "그래서 곡을 만들고 있는데…….",
-        "멤버들의 개성과 취향이 \n전부 강해서 큰일이네.",
-        "모두의 취향을 만족시킬 수 \n있는 곡이 아니라면 \n음악적 견해를 이유로 \n밴드가 해체되어버릴 수도 \n있으니까.",
-        "내가 모두의 의견에\n 귀를 기울여서, \n모두가 즐겁게 연주할 수 있는 \n곡을 만들 수 있게 도와줘!",
-        "앗, 저기 북극곰이 오네.",
-        "뭔가 하고 싶은 말이 있나 봐.",
-        "계속하려면 → 키를 누르세요.",
+        "멤버들의 개성과 취향이 전부 강해서 큰일이네.",
+        "모두의 취향을 만족시킬 수 있는 곡이 아니라면 \n음악적 견해를 이유로 밴드가 해체되어버릴 수도 있으니까.",
+        "내가 모두의 의견에 귀를 기울여서, \n모두가 즐겁게 연주할 수 있는 곡을 만들 수 있게 도와줘!",
+        "앗, 저기 북극곰이 오네. \n뭔가 하고 싶은 말이 있나 봐.",
       ];
       if (currentDialogueIndex == 0) {
-        text(dialogues[0], 30, height / 2);
-      } else text(displayedText, 30, height / 2);
+        text(dialogues[0], width / 2, height - 70);
+      } else text(displayedText, width / 2, height - 70);
 
       //동물들 이미지 제시 --> 좌표 수정했습니다!
-      if (currentDialogueIndex == 5) {
+      if (currentDialogueIndex == 3) {
         //북극곰
-        image(drumBear, 0, height - 150);
+        image(drumBear, 0, 0);
+      } else if (currentDialogueIndex == 4) {
+        //카피바라
+        image(bassCapy, 0, 0);
+      } else if (currentDialogueIndex == 5) {
+        //고양이
+        image(guitarCat, 0, 0);
       } else if (currentDialogueIndex == 6) {
         //카피바라
-        image(bassCapy, 0, height - 150);
+        image(keyboardRabbit, 0, 0);
       } else if (currentDialogueIndex == 7) {
-        //고양이
-        image(guitarCat, 0, height - 150);
-      } else if (currentDialogueIndex == 8) {
-        //카피바라
-        image(keyboardRabbit, 0, height - 150);
-      } else if (currentDialogueIndex == 9) {
         //여우
-        image(vocalFox, 0, height - 150);
-      } else if (currentDialogueIndex == 10) {
+        image(vocalFox, 0, 0);
+      } else if (currentDialogueIndex == 8) {
         //전체 등장
-        image(drumBear, 120, height - 150);
-        image(bassCapy, 80, height - 150);
-        image(guitarCat, 30, height - 150);
-        image(keyboardRabbit, -30, height - 150);
-        image(vocalFox, -80, height - 150);
-      } else if (currentDialogueIndex == 16) {
-        envelope.play(bgm, 0, 1);
+        image(drumBear, 120, 0);
+        image(bassCapy, 80, 0);
+        image(guitarCat, 30, 0);
+        image(keyboardRabbit, -30, 0);
+        image(vocalFox, -80, 0);
+      } else if (currentDialogueIndex == 13) {
+        env.triggerRelease();
       }
 
-      textSize(14);
-      text("계속해서 대사를 보려면 엔터키를 눌러주세요", 30, height / 2 - 100);
-      textAlign(CENTER, CENTER);
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length
+      ) {
+        foxVoice.play();
+      }
+
       break;
 
     case 2: //drum Intro
       image(drumIntroImage, 0, 0);
-      bgm.pause();
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
       //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
       //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
-      textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
-      textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
-      textSize(20); //대사의 크기입니다.
 
       //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
       if (currentDialogueIndex > dialogues.length && !isDisplaying) {
         currentDialogueIndex = 0;
         isDisplaying = false;
-        initializeDialogue = false;
+        initializeDialogue();
       } else {
       }
 
@@ -282,30 +317,31 @@ function draw() {
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
       //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      image(dialogueBear, 0, 0);
+      textSize(18);
+      textFont(choice);
       dialogues = [
         "야, 너 곡을 쓸 거라고 했지? \nBPM은 북극의 얼음이 녹는 속도에 맞춰 줘.",
-        "지금도 고향이 녹고 있을 걸 생각하면\n가슴이 답답해지니까,",
-        "그 한을 음악으로 풀어야겠어!",
-        "드럼 한 번 제대로 쳐보자고!",
+        "지금도 고향이 녹고 있을 걸 생각하면 가슴이 답답해지니까,",
+        "그 한을 음악으로 풀어야겠어! 드럼 한 번 제대로 쳐보자고!",
         "어때? 할 수 있지?",
-        "북극곰의 의견을 수용하려면 → 키를 누르세요.", //스테이지 진전을 위한 설명
       ];
 
       //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
       if (currentDialogueIndex == 0) {
-        text(dialogues[0], 30, height / 2 - 100);
+        text(dialogues[0], width / 2, height - 70);
         //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-      } else text(displayedText, 30, height / 2 - 100);
+      } else text(displayedText, width / 2, height - 70);
 
-      textSize(14);
-      //스테이지 버튼(오른쪽 화살표)와 구분하기 위해 엔터키를 사용합니다.
-      //유저에게 해당 사항을 안내하기 위해 문구를 추가했습니다.
-      text("계속해서 대사를 보려면 엔터키를 눌러주세요", 30, height / 2 - 150);
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length
+      ) {
+        bearVoice.play();
+      }
 
-      //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
-      textAlign(CENTER, CENTER);
-      //여기까지 복사하시면 됩니다.
-
+      sceneChange = true;
       break;
 
     case 3: //Drum Game Explanation
@@ -322,18 +358,16 @@ function draw() {
         realGame.display();
       }
 
-      drumDifferent = sqrt(
-        (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM) *
-          (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM)
-      );
-
-      console.log(realGame.averageBPM.toFixed(2)); //잘 작동함
+      //console.log(realGame.averageBPM.toFixed(2)); //잘 작동함
       //console.log(realGame.missionGuage.targetBPM);
-      console.log(drumDifferent);
+      console.log("drumdiffernt" + drumDifferent);
 
-      if (drumDifferent <= 20) drumFinal = 10;
-      else if (drumDifferent > 20 && drumDifferent < 50) drumFinal = 5;
-      else if (drumDifferent >= 50) drumFinal = 0;
+      if (realGame.isGameOver) {
+        if (drumDifferent <= 20) drumFinal = 10;
+        else if (drumDifferent > 20 && drumDifferent < 50) drumFinal = 5;
+        else if (drumDifferent >= 50) drumFinal = 0;
+      }
+
       break;
 
     case 5: //bass intro
@@ -342,17 +376,11 @@ function draw() {
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
       //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
       //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
-      textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
-      textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
-      textSize(20); //대사의 크기입니다.
-      strokeWeight(0);
 
-      //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
-      if (currentDialogueIndex > 0 && !isDisplaying && initializeDialogue) {
-        currentDialogueIndex = 0;
-        isDisplaying = true;
-        initializeDialogue = false;
-      } else {
+      if (sceneChange) {
+        initializeDialogue();
+        sceneChange = false;
+        console.log("대화 초기화");
       }
 
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
@@ -361,28 +389,35 @@ function draw() {
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
       //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      image(dialogueCopy, 0, 0);
+      textSize(18);
+      textFont(choice);
+      fill(0);
+      strokeWeight(0);
       dialogues = [
         "여우야! 네가 생각해도 역시\n베이스가 짱이지?",
         "우리 곡에서 베이스의 멋짐을\n제대로 보여줬으면 좋겠어!",
         "공연 때 친구들이 엄청 많이\n온다고 했단 말이야.",
         "베이스에서도 제대로 멋진 소리가\n난다는 사실을 모두에게 들려줄거야!",
-        "카피바라의 의견을 수용하려면 → 키를 누르세요.", //스테이지 진전을 위한 설명
       ];
 
       //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
       if (currentDialogueIndex == 0) {
-        text(dialogues[0], 30, height / 2 - 100);
+        text(dialogues[0], width / 2, height - 70);
         //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-      } else text(displayedText, 30, height / 2 - 100);
-
-      textSize(10);
-      //스테이지 버튼(오른쪽 화살표)와 구분하기 위해 엔터키를 사용합니다.
-      //유저에게 해당 사항을 안내하기 위해 문구를 추가했습니다.
-      text("계속해서 대사를 보려면 엔터키를 눌러주세요", 30, height / 2 - 200);
+      } else text(displayedText, width / 2, height - 70);
 
       //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
       textAlign(CENTER, CENTER);
       //여기까지 복사하시면 됩니다.
+
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length
+      ) {
+        copyVoice.play();
+      }
 
       break;
 
@@ -392,10 +427,6 @@ function draw() {
 
     case 7: //bass game
       background(0);
-      bassFinal = 10;
-      //베이스의 경우, 점수를 내는 로직이 아니라 될 때까지 해보는 로직인지라
-      //점수를 구현하기가 애매해 보입니다. 그래서 일단 자동 10점으로 기록하고 갈게요.
-
       switch (bassLevel) {
         case 0: // 게임 오프닝 화면
           strokeWeight(10);
@@ -470,6 +501,10 @@ function draw() {
 
         case 7: // 엔딩 화면
           displayEndingScreen();
+
+          bassFinal = 10;
+          //베이스의 경우, 점수를 내는 로직이 아니라 될 때까지 해보는 로직인지라
+          //점수를 구현하기가 애매해 보입니다. 그래서 일단 자동 10점으로 기록하고 갈게요.
           break;
 
         case 8: // TRY AGAIN 화면 (해당 레벨로 다시 돌아감)
@@ -500,10 +535,6 @@ function draw() {
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
       //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
       //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
-      textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
-      textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
-      textSize(20); //대사의 크기입니다.
-      strokeWeight(0);
 
       //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
       if (currentDialogueIndex > dialogues.length && !isDisplaying) {
@@ -518,28 +549,38 @@ function draw() {
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
       //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      if (currentDialogueIndex <= 2) {
+        image(dialogueRabbit, 0, 0);
+      } else image(dialogueFox, 0, 0);
+      textSize(18);
+      textFont(choice);
+      fill(0);
+      strokeWeight(0);
       dialogues = [
         "최고의 일광욕을 위해 떠남!\n합주는 돌아와서 합류 예정!",
         "……이라는 쪽지 한 장과 선글라스만 남아 있다.",
         "이런! \n야생의 비스카차(이)가 펑크를 내고 도망가버렸다!",
         "이런 키보디스트라도, \n프론트맨이 된 도리로 품어줘야겠지…….",
-        "비스카차를 위한 멜로디를 만들려면 → 키를 누르세요.", //스테이지 진전을 위한 설명
       ];
 
       //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
       if (currentDialogueIndex == 0) {
-        text(dialogues[0], 30, height / 2 - 100);
+        text(dialogues[0], width / 2, height - 70);
         //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-      } else text(displayedText, 30, height / 2 - 100);
-
-      textSize(14);
-      //스테이지 버튼(오른쪽 화살표)와 구분하기 위해 엔터키를 사용합니다.
-      //유저에게 해당 사항을 안내하기 위해 문구를 추가했습니다.
-      text("계속해서 대사를 보려면 엔터키를 눌러주세요", 30, height / 2 - 150);
-
+      } else text(displayedText, width / 2, height - 70);
       //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
       textAlign(CENTER, CENTER);
       //여기까지 복사하시면 됩니다.
+
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length
+      ) {
+        if (currentDialogueIndex <= 2) {
+          rabbitVoice.play();
+        } else foxVoice.play();
+      }
 
       break;
 
@@ -565,16 +606,6 @@ function draw() {
           text("R U READY?", _width / 2, _height / 2 - 10);
           text("Press Space to start", _width / 2, _height / 2 + 10);
           textSize(10);
-          text(
-            "기억하기 쉬운 멜로디를 만들어보자! 나부터 기억하기 쉬워야겠지?",
-            _width / 2,
-            _height / 2 + 40
-          );
-          text(
-            "떠오르는 멜로디를 기억해서 그대로 쳐보자. 쉽게 기억날수록 키보디스트도 편해질거야.",
-            _width / 2,
-            _height / 2 + 60
-          );
 
           //스페이스바 눌러서 시작
           if (keyIsPressed && keyCode == 32) {
@@ -668,10 +699,16 @@ function draw() {
           break;
 
         case 8:
-          if (score >= 70) text("GOOD JOB", width / 2, height / 2);
-          else if (30 <= score && score < 70)
+          if (score >= 70) {
+            text("GOOD JOB", width / 2, height / 2);
+            keyboardFinal = 10;
+          } else if (30 <= score && score < 70) {
             text("NOT BAD", width / 2, height / 2);
-          else if (score < 30) text("FXXK YOU", width / 2, height / 2);
+            keyboardFinal = 5;
+          } else if (score < 30) {
+            text("FXXK YOU", width / 2, height / 2);
+            keyboardFinal = 0;
+          }
       }
       break;
 
@@ -680,10 +717,6 @@ function draw() {
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
       //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
-      //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
-      textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
-      textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
-      textSize(20); //대사의 크기입니다.
 
       //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
       if (currentDialogueIndex > dialogues.length && !isDisplaying) {
@@ -698,27 +731,32 @@ function draw() {
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
       //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      image(dialogueCat, 0, 0);
+      textSize(18);
+      textFont(choice);
+      fill(0);
+      strokeWeight(0);
       dialogues = [
         "이봐, 곡을 쓴다고 들었어. \n다만 나는 음악 신동이니까,",
         "내가 지금 연습할 필요는 못 느끼겠어.",
         "네가 나 대신 손으로 연습 좀 해!",
-        "고양이의 의견을 수용하려면 → 키를 누르세요.", //스테이지 진전을 위한 설명
       ];
 
       //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
       if (currentDialogueIndex == 0) {
-        text(dialogues[0], 30, height / 2 - 100);
+        text(dialogues[0], width / 2, height - 70);
         //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-      } else text(displayedText, 30, height / 2 - 100);
-
-      textSize(14);
-      //스테이지 버튼(오른쪽 화살표)와 구분하기 위해 엔터키를 사용합니다.
-      //유저에게 해당 사항을 안내하기 위해 문구를 추가했습니다.
-      text("계속해서 대사를 보려면 엔터키를 눌러주세요", 30, height / 2 - 150);
-
-      //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
+      } else text(displayedText, width / 2, height - 70);
       textAlign(CENTER, CENTER);
       //여기까지 복사하시면 됩니다.
+
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length
+      ) {
+        catVoice.play();
+      }
       break;
 
     case 12: //guitar ex
@@ -776,7 +814,7 @@ function draw() {
         textAlign(CENTER, CENTER);
         fill(0);
         text(
-          "Starting in: " + nf(5 - elapsedTime, 1, 1) + "s",
+          "Starting in: " + int(nf(5 - elapsedTime, 1, 1)) + "s",
           width / 2,
           height / 2
         );
@@ -887,7 +925,8 @@ function draw() {
       break;
 
     case 16: // 최종 결과
-      console.log(drumFinal);
+      bgm.stop();
+      bgmPlaying = false;
 
       image(scoreImage, 0, 0);
       strokeWeight(0);
@@ -938,13 +977,4 @@ function draw() {
         }
       }
   }
-
-  //테플용 가이드
-  textFont(kossuyeom);
-  fill(100);
-  textAlign(LEFT, CENTER);
-  textSize(15);
-  text("다음 씬으로: →", 10, 40);
-  text("다음 대사로: ENTER", 10, 20);
-  textAlign(CENTER, CENTER);
 }
