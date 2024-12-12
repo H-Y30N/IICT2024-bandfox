@@ -56,7 +56,6 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
       if (notes[i].x > width) {
         notes.splice(i, 1); // 화면을 벗어나면 삭제
         missedNotes++;
-
       }
     }
   }
@@ -69,18 +68,17 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   text("Missed: " + missedNotes, 10, 40); // 놓친 노트 개수 표시
 }
 
-
-
 function keyPressed() {
   let keyMap = {
-    '4': 0, // 첫 번째 줄 (4키)
-    'r': 1, // 두 번째 줄 (R키)
-    'f': 2, // 세 번째 줄 (F키)
-    'v': 3  // 네 번째 줄 (V키)
+    4: 0, // 첫 번째 줄 (4키)
+    r: 1, // 두 번째 줄 (R키)
+    f: 2, // 세 번째 줄 (F키)
+    v: 3, // 네 번째 줄 (V키)
   };
 
   // 키 입력 처리
-  if (key.toLowerCase() in keyMap) { // 대소문자 무관하게 처리
+  if (key.toLowerCase() in keyMap) {
+    // 대소문자 무관하게 처리
     let stringIndex = keyMap[key.toLowerCase()];
     console.log(`Pressed key: ${key}, String index: ${stringIndex}`); // 키 입력 로그
 
@@ -148,7 +146,7 @@ function keyPressed() {
   else pianoUser.key = -1;
 
   //엔터키를 누르면 대사가 출력되도록 하는 코드
-  if (keyCode === ENTER && !nowTalking) {
+  if (keyCode === ENTER && !nowTalking && !initializeDialogue) {
     click.play();
     if (isDisplaying) {
       // 출력 중이라면 즉시 대사 전체 표시
@@ -164,6 +162,8 @@ function keyPressed() {
         showNextCharacter();
       } else {
         displayedText = "";
+        initializeDialogue = true;
+        isDisplaying = false;
         // 대사가 끝났을 때
       }
     }

@@ -6,6 +6,7 @@ let currentCharIndex = 0; // 현재 대화의 문자 인덱스
 let isDisplaying = false; // 현재 텍스트 출력 중인지 여부
 let stageChange = false;
 let nowTalking = false;
+let initializeDialogue = false;
 
 let stage = 0;
 
@@ -271,6 +272,7 @@ function draw() {
       if (currentDialogueIndex > dialogues.length && !isDisplaying) {
         currentDialogueIndex = 0;
         isDisplaying = false;
+        initializeDialogue = false;
       } else {
       }
 
@@ -284,6 +286,8 @@ function draw() {
         "야, 너 곡을 쓸 거라고 했지? \nBPM은 북극의 얼음이 녹는 속도에 맞춰 줘.",
         "지금도 고향이 녹고 있을 걸 생각하면\n가슴이 답답해지니까,",
         "그 한을 음악으로 풀어야겠어!",
+        "드럼 한 번 제대로 쳐보자고!",
+        "어때? 할 수 있지?",
         "북극곰의 의견을 수용하려면 → 키를 누르세요.", //스테이지 진전을 위한 설명
       ];
 
@@ -318,7 +322,10 @@ function draw() {
         realGame.display();
       }
 
-      drumDifferent = sqrt((realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM)*(realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM));
+      drumDifferent = sqrt(
+        (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM) *
+          (realGame.averageBPM.toFixed(2) - MissionGuage.targetBPM)
+      );
 
       console.log(realGame.averageBPM.toFixed(2)); //잘 작동함
       //console.log(realGame.missionGuage.targetBPM);
@@ -338,11 +345,13 @@ function draw() {
       textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
       textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
       textSize(20); //대사의 크기입니다.
+      strokeWeight(0);
 
       //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
-      if (currentDialogueIndex > dialogues.length && !isDisplaying) {
+      if (currentDialogueIndex > 0 && !isDisplaying && initializeDialogue) {
         currentDialogueIndex = 0;
-        isDisplaying = false;
+        isDisplaying = true;
+        initializeDialogue = false;
       } else {
       }
 
@@ -378,7 +387,7 @@ function draw() {
       break;
 
     case 6: //bass explanation
-      image(bassEx,0,0);
+      image(bassEx, 0, 0);
       break;
 
     case 7: //bass game
@@ -494,6 +503,7 @@ function draw() {
       textAlign(LEFT, CENTER); //대사가 등장하기 좋은 정렬로 고칩니다.
       textFont(leeseoyun); //대사용 폰트입니다. (수정 가능)
       textSize(20); //대사의 크기입니다.
+      strokeWeight(0);
 
       //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
       if (currentDialogueIndex > dialogues.length && !isDisplaying) {
@@ -509,7 +519,6 @@ function draw() {
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
       //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
       dialogues = [
-        "…….",
         "최고의 일광욕을 위해 떠남!\n합주는 돌아와서 합류 예정!",
         "……이라는 쪽지 한 장과 선글라스만 남아 있다.",
         "이런! \n야생의 비스카차(이)가 펑크를 내고 도망가버렸다!",
