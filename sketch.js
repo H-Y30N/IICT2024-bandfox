@@ -30,6 +30,7 @@ let bassCapy; //카피바라 이미지
 let keyboardRabbit; //토끼 이미지
 let guitarCat; //고양이 이미지
 let backgroundImage; //기본 배경
+let everyone;
 
 //대사창 파일
 let dialogueFox;
@@ -124,6 +125,7 @@ function preload() {
   keyboardEx = loadImage("assets/keyboardEx.png");
   bassEx = loadImage("assets/bassEx.png");
   guitarEx = loadImage("assets/guitarEx.png");
+  everyone = loadImage("assets/everyone.png");
 
   drumPractice = loadImage("assets/drumPractice.png");
   drumPracticeStart = loadImage("assets/drumPracticeStart.png");
@@ -221,12 +223,40 @@ function draw() {
         env.triggerAttack();
         bgmPlaying = true;
       }
-
-      //점수 초기화
-      drumFinal = undefined;
-      bassFinal = undefined;
-      keyboardFinalFinal = undefined;
-      guitarFinal = undefined;
+      if (
+        drumFinal !== undefined &&
+        bassFinal !== undefined &&
+        keyboardFinal !== undefined &&
+        guitarFinal !== undefined
+      ) {
+        //점수 초기화
+        drumFinal = undefined;
+        bassFinal = undefined;
+        keyboardFinal = undefined;
+        guitarFinal = undefined;
+        isInPracticeMode = true;
+        hands = []; // 손 데이터 저장
+        scoreIncrementedRects = []; // 점수 증가 여부 체크 배열
+        pointOfGuitar = 0; // 점수
+        rects = []; // 빨간 네모들의 정보 저장
+        score = 0;
+        level = 1;
+        newLevel = false;
+        _width = 640;
+        _height = 480;
+        piano = [];
+        img = [];
+        timeOK = false;
+        scoreNum = 0;
+        wait = false;
+        notes = [];
+        bassScore = 0;
+        bassLevel = 0;
+        missedNotes = 0; // 놓친 노트 개수
+        retryLevel = 0; // 실패한 레벨을 기억하는 변수
+        drumPracticeStart;
+        drumPracticeComplete;
+      }
 
       sceneChange = true;
 
@@ -283,11 +313,7 @@ function draw() {
         image(vocalFox, 0, 0);
       } else if (currentDialogueIndex == 8) {
         //전체 등장
-        image(drumBear, 120, 0);
-        image(bassCapy, 80, 0);
-        image(guitarCat, 30, 0);
-        image(keyboardRabbit, -30, 0);
-        image(vocalFox, -80, 0);
+        image(everyone, 0, 0);
       } else if (currentDialogueIndex == 13) {
         env.triggerRelease();
       }
@@ -295,7 +321,8 @@ function draw() {
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
-        currentCharIndex < dialogues[currentDialogueIndex].length
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER
       ) {
         foxVoice.play();
       }
