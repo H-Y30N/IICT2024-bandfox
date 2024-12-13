@@ -222,6 +222,12 @@ function draw() {
         bgmPlaying = true;
       }
 
+      //점수 초기화
+      drumFinal = undefined;
+      bassFinal = undefined;
+      keyboardFinalFinal = undefined;
+      guitarFinal = undefined;
+
       sceneChange = true;
 
       break;
