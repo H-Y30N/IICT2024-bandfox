@@ -68,7 +68,6 @@ let strings = [100, 200, 300, 400]; // 줄의 위치 (y좌표)
 let bassScore = 0;
 let bassLevel = 0;
 let missedNotes = 0; // 놓친 노트 개수
-const MAX_MISSES = 5; // 놓칠 수 있는 최대 노트 개수
 let retryLevel = 0; // 실패한 레벨을 기억하는 변수
 let bassEx; //베이스 게임 설명 이미지
 
