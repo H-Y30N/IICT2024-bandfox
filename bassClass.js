@@ -1,4 +1,5 @@
 function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
+  gameTimer++;
   // 줄 그리기
   stroke(255);
   strokeWeight(4);
@@ -10,8 +11,14 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   noFill();
   stroke(255);
   strokeWeight(2);
-  for (let y of strings) {
-    ellipse(width - 50, y, 40); // 목표 지점 표시
+  const displayKeys = ["9", "I", "J", "N"]; // 표시되는 키 순서
+  for (let i = 0; i < strings.length; i++) {
+    ellipse(width - 50, strings[i], 40); // 목표 지점 원
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    fill(255); // 텍스트 색상
+    text(displayKeys[i], width - 50, strings[i]); // 목표 원 내부에 키 표시
+    noFill(); // 원 내부 비우기 유지
   }
 
   // 노트 생성
@@ -41,7 +48,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
     // 선택된 개수의 노트 생성
     let selectedStrings = getRandomStrings(numNotesToGenerate);
     for (let i of selectedStrings) {
-      let newNote = new Note(0, strings[i], speedMultiplier);
+      let newNote = new Note(0, strings[i], speedMultiplier); // displayKeys[i] 없이 기존 변수 유지
       notes.push(newNote);
     }
   }
@@ -56,16 +63,29 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
       if (notes[i].x > width) {
         notes.splice(i, 1); // 화면을 벗어나면 삭제
         missedNotes++;
+        showFeedback("Miss");
       }
     }
   }
 
-  // 점수 및 놓친 노트 수 표시
-  fill(255);
-  textSize(24);
+  // 상단 점수 및 남은 시간 표시
+  textAlign(RIGHT, TOP);
+  text(`Score: ${score}`, width - 10, 10);
+  text(`Missed: ${missedNotes}`, width - 10, 40);
+
+  // 피드백 메시지 표시
+  if (feedbackTimer > 0) {
+    textSize(32);
+    fill(feedbackText === "Good" ? "green" : "red"); // Good은 초록색, Miss는 빨간색
+    text(feedbackText, width / 2, height / 2);
+    feedbackTimer--;
+  }
+
+  // 남은 시간 표시
+  let remainingTime = ceil((gameDuration - gameTimer) / 60);
+  textSize(18);
   textAlign(LEFT, TOP);
-  text("Score: " + bassScore, 10, 10);
-  text("Missed: " + missedNotes, 10, 40); // 놓친 노트 개수 표시
+  text(`Time Left: ${remainingTime}s`, 10, 10);
 }
 
 function getRandomStrings(count) {
@@ -87,9 +107,11 @@ function resetGame() {
 }
 
 function resetLevel() {
-  missedNotes = 0; // 놓친 노트 수 초기화
-  notes = []; // 현재 화면에 있는 노트 제거
+  missedNotes = 0;
+  notes = [];
+  gameTimer = 0; // 타이머 초기화
 }
+
 
 function displayReadyScreen(levelNumber) {
   fill(255);
@@ -98,42 +120,36 @@ function displayReadyScreen(levelNumber) {
 }
 
 function displayEndingScreen() {
-  if (bassScore >= 50) {
-    text("GOOD JOB!", _width / 2, _height / 2);
-  } else {
-    text("TRY AGAIN!", _width / 2, _height / 2);
-  }
-  fill(100);
-  rect(_width / 2 - 80, 300, 160, 40);
+  let finalScore = max(score - missedNotes * 2, 0);
+  textSize(32);
+  textAlign(CENTER, CENTER);
   fill(255);
-  text("Restart", _width / 2, 320);
-
-  if (
-    mouseIsPressed &&
-    mouseX > _width / 2 - 80 &&
-    mouseX < _width / 2 + 80 &&
-    mouseY > 300 &&
-    mouseY < 340
-  ) {
-    bassLevel = 0;
-    resetGame();
-  }
+  text("Game Over!", _width / 2, _height / 2 - 50);
+  text(`Final Score: ${finalScore}`, _width / 2, _height / 2);
 }
 
+
 class Note {
-  constructor(x, y, speedMultiplier) {
-    this.x = x; // 노트의 시작 위치 (왼쪽 끝)
-    this.y = y; // 노트가 떨어지는 줄의 위치
-    this.size = 30; // 노트 크기
-    this.speed = 2 * speedMultiplier; // 노트 이동 속도 (난이도에 따라 조절)
+  constructor(x, y, speedMultiplier, key) {
+    this.x = x;
+    this.y = y;
+    this.size = 30;
+    this.speed = 2 * speedMultiplier;
+    this.hitEffect = false; // 맞춘 효과 활성화 상태
+    this.key = key; // 노트에 표시될 키
   }
 
   update() {
-    this.x += this.speed; // 오른쪽으로 이동
+    this.x += this.speed;
   }
 
   show() {
-    fill(255, 0, 0);
+    fill(this.hitEffect ? color(0, 0, 255) : color(255, 0, 0)); // 맞춘 노트: 파란색, 기본: 빨간색
     ellipse(this.x, this.y, this.size);
+    fill(255); // 텍스트 색상
+    textSize(14);
+    textAlign(CENTER, CENTER);
+    text(this.key, this.x, this.y); // 노트에 표시되는 키
   }
 }
+
