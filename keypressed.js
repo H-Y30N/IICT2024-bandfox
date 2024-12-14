@@ -1,30 +1,36 @@
 function keyPressed() {
   let keyMap = {
-    4: 0, // 첫 번째 줄 (4키)
-    r: 1, // 두 번째 줄 (R키)
-    f: 2, // 세 번째 줄 (F키)
-    v: 3, // 네 번째 줄 (V키)
+    "9": 0, // 첫 번째 줄
+    i: 1, // 두 번째 줄
+    j: 2, // 세 번째 줄
+    n: 3, // 네 번째 줄
   };
 
   // 키 입력 처리
   if (key.toLowerCase() in keyMap) {
-    // 대소문자 무관하게 처리
     let stringIndex = keyMap[key.toLowerCase()];
     console.log(`Pressed key: ${key}, String index: ${stringIndex}`); // 키 입력 로그
 
     for (let i = notes.length - 1; i >= 0; i--) {
       if (notes[i] && notes[i].y === strings[stringIndex]) {
-        // 배열 인덱스 유효성 확인
         let distance = Math.abs(notes[i].x - (width - 50));
         if (distance < 30) {
-          // 노트가 목표 지점에 가까운 위치에 도달했을 때 점수 추가
+          // 올바른 입력 처리
           console.log("Note hit!");
           bassScore += 1; // 점수 증가
-          notes.splice(i, 1); // 맞춘 노트는 삭제
-          break;
+          notes[i].hitEffect = true; // 색상 변경을 위한 플래그
+          showFeedback("Good"); // 피드백 메시지
+          goodSound.play(); // 효과음 재생
+
+          // 100ms 후 노트를 삭제
+          setTimeout(() => notes.splice(i, 1), 100);
+          return; // 조건 만족 시 루프 종료
         }
       }
     }
+    // 잘못된 입력 처리
+    missedNotes++; // 놓친 노트 증가
+    showFeedback("Miss"); // Miss 메시지
   }
 
   //드럼 관련 함수
