@@ -5,6 +5,7 @@ let displayedText = ""; // 현재까지 화면에 표시된 텍스트
 let currentCharIndex = 0; // 현재 대화의 문자 인덱스
 let isDisplaying = false; // 현재 텍스트 출력 중인지 여부
 let sceneChange = false;
+let soundPlayed = false;
 
 let stage = 0;
 
@@ -82,6 +83,8 @@ let img = [];
 let timeOK = false;
 let scoreNum = 0;
 let wait = false;
+let feedback = false;
+let hasChanged = false;
 let keyboardEx; //키보드 게임 설명 이미지
 
 //기타 관련 전역변수
@@ -106,6 +109,7 @@ function preload() {
   // Load Images
   openingImage = loadImage("assets/opening.png");
   gameIntroImage = loadImage("assets/gameIntro.jpg");
+  gameIntroImage2 = loadImage("assets/gameIntro2.jpg");
   drumIntroImage = loadImage("assets/drumIntro.jpg");
   bassIntroImage = loadImage("assets/bassIntro.jpg");
   keyboardIntroImage = loadImage("assets/keyboardIntro.jpg");
@@ -145,7 +149,7 @@ function preload() {
   for (let i = 0; i < 7; i++) {
     piano[i] = loadSound(`assets/piano_${i}.wav`);
   }
-  for (let i = 1; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     img[i] = loadImage(`assets/img${i}.png`);
   }
 
@@ -167,6 +171,8 @@ function preload() {
   rabbitVoice = loadSound("assets/rabbitVoice.ogg");
   copyVoice = loadSound("assets/copyVoice.wav");
   catVoice = loadSound("assets/catVoice.mp3");
+  hmmSound = loadSound("assets/hmmSound.mp3");
+  count = loadSound("assets/count.mp3");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
@@ -185,7 +191,7 @@ function setup() {
 
   //키보드 관련 세팅
   pianoNav = new PianoRoll(40, 60, 240, 160, piano);
-  pianoUser = new PianoRoll(300, 220, 300, 200, piano);
+  pianoUser = new PianoRoll(300, 250, 300, 200, piano);
 
   //기타 관련 세팅
   video = createCapture(VIDEO);
@@ -198,7 +204,7 @@ function setup() {
 }
 
 function draw() {
-  console.log(drumFinal, bassFinal, keyboardFinal, guitarFinal);
+  //console.log(drumFinal, bassFinal, keyboardFinal, guitarFinal);
 
   textFont(kossuyeom);
   switch (stage) {
@@ -263,15 +269,21 @@ function draw() {
       break;
 
     case 1: //Game Intro
-      console.log(currentDialogueIndex);
+      //console.log(currentDialogueIndex);
 
       if (sceneChange) {
         initializeDialogue();
         sceneChange = false;
-        console.log("대화 초기화");
+        //console.log("대화 초기화");
       }
-      image(gameIntroImage, 0, 0);
-      image(dialogueFox, 0, 0);
+      if (
+        currentDialogueIndex == 1 ||
+        currentDialogueIndex == 10 ||
+        currentDialogueIndex == 11
+      )
+        image(gameIntroImage2, 0, 0);
+      else image(gameIntroImage, 0, 0);
+
       textSize(18);
       textFont(choice);
       dialogues = [
@@ -284,16 +296,12 @@ function draw() {
         "그리고 키보디스트 비스카차. \n언제나 선글라스를 가지고 다니는 멋쟁이지!", //6 토끼
         "마지막으로 보컬이자 프론트맨인 나, \n여우가 있어.", //7 여우
         "이 각박한 인간 중심 사회에서, \n우리가 동물 밴드로 잘 해나갈 수 있도록 응원해 줘!",
-        "멋진 밴드가 되려면 먼저 자작곡을 쓸 줄 알아야 해.",
-        "그래서 곡을 만들고 있는데…….",
+        "멋진 밴드가 되려면 먼저 자작곡을 쓸 줄 알아야 해.\n그래서 곡을 만들고 있는데…….",
         "멤버들의 개성과 취향이 전부 강해서 큰일이네.",
         "모두의 취향을 만족시킬 수 있는 곡이 아니라면 \n음악적 견해를 이유로 밴드가 해체되어버릴 수도 있으니까.",
         "내가 모두의 의견에 귀를 기울여서, \n모두가 즐겁게 연주할 수 있는 곡을 만들 수 있게 도와줘!",
         "앗, 저기 북극곰이 오네. \n뭔가 하고 싶은 말이 있나 봐.",
       ];
-      if (currentDialogueIndex == 0) {
-        text(dialogues[0], width / 2, height - 70);
-      } else text(displayedText, width / 2, height - 70);
 
       //동물들 이미지 제시 --> 좌표 수정했습니다!
       if (currentDialogueIndex == 3) {
@@ -313,18 +321,33 @@ function draw() {
         image(vocalFox, 0, 0);
       } else if (currentDialogueIndex == 8) {
         //전체 등장
-        image(everyone, 0, 0);
-      } else if (currentDialogueIndex == 13) {
+        image(everyone, -10, -10);
+      } else if (currentDialogueIndex == 12) {
         env.triggerRelease();
       }
 
+      //대사창
+      image(dialogueFox, 0, 0);
+
+      if (currentDialogueIndex == 0) {
+        text(dialogues[0], width / 2, height - 70);
+      } else text(displayedText, width / 2, height - 70);
+
+      //목소리 재생
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
-        keyCode == ENTER
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
       ) {
         foxVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
       }
 
       break;
@@ -345,7 +368,7 @@ function draw() {
       }
 
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
-      console.log(currentDialogueIndex);
+      //console.log(currentDialogueIndex);
 
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
@@ -369,9 +392,17 @@ function draw() {
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
-        currentCharIndex < dialogues[currentDialogueIndex].length
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
       ) {
         bearVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
       }
 
       sceneChange = true;
@@ -393,7 +424,7 @@ function draw() {
 
       //console.log(realGame.averageBPM.toFixed(2)); //잘 작동함
       //console.log(realGame.missionGuage.targetBPM);
-      console.log("drumdiffernt" + drumDifferent);
+      //console.log("drumdiffernt" + drumDifferent);
 
       if (realGame.isGameOver) {
         if (drumDifferent <= 20) drumFinal = 10;
@@ -413,11 +444,11 @@ function draw() {
       if (sceneChange) {
         initializeDialogue();
         sceneChange = false;
-        console.log("대화 초기화");
+        //console.log("대화 초기화");
       }
 
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
-      console.log(currentDialogueIndex);
+      //console.log(currentDialogueIndex);
 
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
@@ -447,9 +478,17 @@ function draw() {
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
-        currentCharIndex < dialogues[currentDialogueIndex].length
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
       ) {
         copyVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
       }
 
       break;
@@ -577,7 +616,7 @@ function draw() {
       }
 
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
-      console.log(currentDialogueIndex);
+      //console.log(currentDialogueIndex);
 
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
@@ -608,11 +647,19 @@ function draw() {
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
-        currentCharIndex < dialogues[currentDialogueIndex].length
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
       ) {
         if (currentDialogueIndex <= 2) {
           rabbitVoice.play();
         } else foxVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
       }
 
       break;
@@ -626,9 +673,8 @@ function draw() {
       textSize(25);
       textAlign(LEFT, CENTER);
       strokeWeight(0);
+      fill(0);
       text("score:" + score, 50, 25);
-      console.log("Key:", key, "KeyCode:", keyCode);
-      console.log(keyboardFinal);
 
       switch (level) {
         case 1:
@@ -759,7 +805,7 @@ function draw() {
       }
 
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
-      console.log(currentDialogueIndex);
+      //console.log(currentDialogueIndex);
 
       //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
       //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
@@ -786,11 +832,18 @@ function draw() {
       if (
         currentDialogueIndex > 0 &&
         currentCharIndex % 9 === 0 &&
-        currentCharIndex < dialogues[currentDialogueIndex].length
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
       ) {
         catVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
       }
-      break;
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
+      }
 
     case 12: //guitar ex
       image(guitarEx, 0, 0);

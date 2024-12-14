@@ -13,10 +13,15 @@ class PianoRoll {
     this.key = -1;
     this.pianoSounds = pianoSounds;
     this.soundPlayed = Array(this.space).fill(false); // 각 건반의 소리 재생 여부
+    this.keyStates = []; // 키가 눌린 상태를 추적
+
+    for (let i = 0; i < this.space; i++) {
+      this.keyStates[i] = false;
+    }
   }
 
-  show() {
-    fill(0);
+  show(alpha) {
+    fill(alpha);
     strokeWeight(4);
     rectMode(CORNER);
     push();
@@ -25,7 +30,7 @@ class PianoRoll {
     //테두리
     fill(255);
 
-    stroke(0);
+    stroke(alpha);
     rect(0, 0, this.w, this.h);
     //흰 건반
     for (let i = 0; i < this.space; i++) {
@@ -37,7 +42,7 @@ class PianoRoll {
       );
     }
     //검은 건반
-    fill(0);
+    fill(alpha);
     strokeWeight(0);
     for (let i = 0; i < 2; i++) {
       rect(
@@ -61,17 +66,31 @@ class PianoRoll {
   }
 
   press() {
+    //console.log(this.keyStates);
+
+    if (wait) {
+      textFont(kossuyeom);
+      textAlign(CENTER, CENTER);
+      textSize(20);
+      fill(150);
+      strokeWeight(4);
+      stroke(255);
+      text("악상 떠올리는 중…", 450, 410);
+      return;
+    }
+
+    soundPlayed = false;
     let isKeyHandled = false;
     strokeWeight(0);
 
     for (let i = 0; i < this.space; i++) {
-      text("A", 310, 400);
-      text("S", 355, 400);
-      text("D", 400, 400);
-      text("F", 440, 400);
-      text("G", 485, 400);
-      text("H", 530, 400);
-      text("J", 575, 400);
+      text("A", 310, 430);
+      text("S", 355, 430);
+      text("D", 400, 430);
+      text("F", 440, 430);
+      text("G", 485, 430);
+      text("H", 530, 430);
+      text("J", 575, 430);
 
       if (
         this.key === i &&
@@ -87,9 +106,10 @@ class PianoRoll {
         );
         isKeyHandled = true;
 
-        // `pressedKeys` 배열에 현재 키가 없으면 추가
-        if (!this.pressedKeys.includes(i)) {
+        // 키가 이미 추가되어도 중복 추가 허용 (한 번씩만)
+        if (!this.keyStates[i]) {
           this.pressedKeys.push(i);
+          this.keyStates[i] = true; // 키 상태 업데이트
           if (this.pianoSounds && this.pianoSounds[i]) {
             this.pianoSounds[i].play();
           }
@@ -108,7 +128,9 @@ class PianoRoll {
 
       // 현재 시간이 각 건반의 시작 시간 범위 안에 있는지 확인
       if (millis() >= keyStartTime && millis() < keyStartTime + this.duration) {
+        wait = true;
         fill(0, 0, 0, 100);
+        strokeWeight(0);
         rect(
           this.x + (this.w / this.space) * this.nav[i], // nav 배열에 따라 위치 계산
           this.y,
@@ -127,6 +149,9 @@ class PianoRoll {
       } else if (millis() > keyStartTime + this.duration) {
         // 건반 소리의 범위가 끝나면 플래그 초기화
         this.soundPlayed[this.nav[i]] = false;
+        wait = false;
+        feedback = false;
+        hasChanged = false;
       }
     }
   }
@@ -151,23 +176,72 @@ function updateScore(num1, num2, num3) {
 
 //case마다 배열 초기화하는 함수
 function initialize() {
-  pianoNav.show();
-  pianoUser.show();
+  pianoNav.show(0);
+  if (wait) pianoUser.show(100);
+  else pianoUser.show(0);
   pianoUser.press();
-  image(img[1], 20, 240, 184, 225);
-  image(img[2], 430, 20, 177, 211);
+  if (feedback) {
+    image(img[1], 0, 250, 348, 225);
+  } else image(img[0], 0, 250, 348, 225);
+  if (wait) {
+    image(img[2], 320, 20, 314, 211);
+  } else image(img[3], 320, 20, 314, 211);
+
+  if (wait && timeOK) {
+    textSize(14);
+    fill(95, 75, 62);
+    strokeWeight(0);
+    textAlign(CENTER, CENTER);
+    textFont(choice);
+    text("멜로디를\n기억해보자!", 412, 85);
+    if (!soundPlayed) {
+      foxVoice.play();
+      soundPlayed = true;
+    }
+  }
+  if (feedback) {
+    if (hasChanged) {
+      textSize(14);
+      fill(78, 78, 72);
+      strokeWeight(0);
+      textAlign(CENTER, CENTER);
+      textFont(choice);
+      text("이 정도면 금방\n익히겠는데?", 210, 325);
+      if (!soundPlayed) {
+        rabbitVoice.play();
+        soundPlayed = true;
+      }
+    } else {
+      textSize(14);
+      fill(78, 78, 72);
+      strokeWeight(0);
+      textAlign(CENTER, CENTER);
+      textFont(choice);
+      text("기억이 잘\n안날 것 같은데…", 210, 325);
+      if (!soundPlayed) {
+        hmmSound.play();
+        soundPlayed = true;
+      }
+    }
+  }
 
   if (newLevel) {
     pianoNav.startTime = millis();
+
     pianoUser.scoreIncreased = false; // 점수 증가 플래그 초기화
     pianoNav.nav = []; // 네비게이션 배열 초기화
     pianoUser.soundPlayed = Array(pianoUser.space).fill(false); // 소리 플래그 초기화
     newLevel = false; // 새 레벨 상태 초기화
     timeOK = false; // 타이머 상태 초기화
+    if (level > 2) {
+      feedback = true;
+    }
   }
 }
 
-//건반 navigate 전 타이머. 준비 시간. 오류 때문에 주석 처리해둠.
+//건반 navigate 전 타이머. 준비 시간.
+let previousShowTimer = -1; // 초기값 설정 (타이머 범위에 없는 값)
+
 function timer() {
   if (timeOK) return; // 타이머 완료 시 다시 실행하지 않음
 
@@ -175,11 +249,23 @@ function timer() {
   let showTimer = 3 - int(elapsedTime / 1000);
 
   if (showTimer > 0) {
-    textSize(32);
+    pianoUser.pressedKeys = [];
 
+    fill(95, 75, 62);
+    textAlign(CENTER, CENTER);
+    textSize(32);
     strokeWeight(0);
-    text(showTimer, 400, 100);
+    textFont(kossuyeom);
+    text(showTimer, 410, 83);
+    wait = true;
+
+    // 이전 값과 현재 값 비교
+    if (showTimer !== previousShowTimer) {
+      count.play(); // showTimer 값이 바뀌었을 때만 실행
+      previousShowTimer = showTimer; // 이전 값을 업데이트
+    }
   } else {
+    soundPlayed = false;
     timeOK = true; // 타이머 완료 상태
     pianoUser.pressedKeys = []; // 타이머 완료 시 눌린 키 초기화
   }
@@ -194,7 +280,7 @@ function updateScore(...expectedKeys) {
     !pianoUser.scoreIncreased
   ) {
     score += scoreNum * 10;
-
+    hasChanged = true;
     pianoUser.scoreIncreased = true; // 점수 증가 플래그 설정
   }
 

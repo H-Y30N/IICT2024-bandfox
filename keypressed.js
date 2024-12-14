@@ -58,15 +58,19 @@ function keyPressed() {
     }
   }
 
+  console.log(pianoUser.pressedKeys);
+
   //키보드 무엇이 눌리냐에 따라 건반을 바꿔준다.
-  if (key === "a" || key === "A") pianoUser.key = 0;
-  else if (key === "s" || key === "S") pianoUser.key = 1;
-  else if (key === "d" || key === "D") pianoUser.key = 2;
-  else if (key === "f" || key === "F") pianoUser.key = 3;
-  else if (key === "g" || key === "G") pianoUser.key = 4;
-  else if (key === "h" || key === "H") pianoUser.key = 5;
-  else if ((key === "j") | (key === "J")) pianoUser.key = 6;
-  else pianoUser.key = -1;
+  if (!wait) {
+    if (key === "a" || key === "A") pianoUser.key = 0;
+    else if (key === "s" || key === "S") pianoUser.key = 1;
+    else if (key === "d" || key === "D") pianoUser.key = 2;
+    else if (key === "f" || key === "F") pianoUser.key = 3;
+    else if (key === "g" || key === "G") pianoUser.key = 4;
+    else if (key === "h" || key === "H") pianoUser.key = 5;
+    else if ((key === "j") | (key === "J")) pianoUser.key = 6;
+    else pianoUser.key = -1;
+  } else return;
 
   let maxStage = 17; // 최대 stage 수 (단계 수)
 
@@ -85,7 +89,7 @@ function keyPressed() {
         currentCharIndex = 0; // 문자 인덱스 초기화
         isDisplaying = true;
         showNextCharacter();
-        console.log(dialogues.length, currentCharIndex);
+        //console.log(dialogues.length, currentCharIndex);
       } else {
         displayedText = "";
         isDisplaying = false;
@@ -124,4 +128,11 @@ function initializeDialogue() {
   dialogues = [];
   currentCharIndex = 0;
   currentDialogueIndex = 0;
+}
+
+function keyReleased() {
+  // 키가 해제되면 keysAdded 초기화
+  for (let i = 0; i < pianoUser.space; i++) {
+    pianoUser.keyStates[i] = false;
+  }
 }
