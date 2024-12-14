@@ -495,11 +495,11 @@ function draw() {
 
       break;
 
-    case 6: //bass explanation
-      image(bassEx, 0, 0);
-      break;
-
-    case 7: //bass game
+    case 6: // bass explanation
+    image(bassEx, 0, 0);
+    break;
+    
+    case 7: // bass game
       background(0);
       switch (bassLevel) {
         case 0: // 게임 오프닝 화면
@@ -508,99 +508,47 @@ function draw() {
           textSize(30);
           text("BASS MINI GAME", _width / 2, _height / 2 - 50);
           fill(100);
-          rectMode(CENTER);
-          rect(_width / 2, 300, 100, 40); // 가운데 위치
-          fill(255);
-          text("Start", _width / 2, 300);
-
-          if (
-            mouseIsPressed &&
-            mouseX > _width / 2 - 50 &&
-            mouseX < _width / 2 + 50 &&
-            mouseY > 280 &&
-            mouseY < 320
-          ) {
-            bassLevel++;
-            resetLevel(); // 게임 시작 시 초기화
+          text("Press Space to Start", _width / 2, 300);
+    
+          // 스페이스바 입력으로 게임 시작
+          if (keyIsPressed && keyCode === 32) {
+            bassLevel = 2; // 레벨 1 시작
+            resetLevel();
           }
           break;
-
-        case 1: // 레벨 1 준비 화면
-          displayReadyScreen(1);
-          if (keyIsPressed && keyCode == 32) {
-            bassLevel++;
-            resetLevel(); // 레벨 시작 시 초기화
-          }
-          break;
-
+    
         case 2: // 레벨 1: 쉬운 난이도
           playLevel(100, 2, 1.3);
-          if (bassScore >= 20) {
-            bassLevel++;
-            notes = [];
+          if (gameTimer > 600) { // 10초 후 레벨 업
+            bassLevel = 4; // 레벨 2로 이동
+            resetLevel();
           }
           break;
-
-        case 3: // 레벨 2 준비 화면
-          displayReadyScreen(2);
-          if (keyIsPressed && keyCode == 32) {
-            bassLevel++;
-            resetLevel(); // 레벨 시작 시 초기화
-          }
-          break;
-
+    
         case 4: // 레벨 2: 중간 난이도
           playLevel(80, 3, 1.6);
-          if (bassScore >= 35) {
-            bassLevel++;
-            notes = [];
+          if (gameTimer > 600) { // 10초 후 레벨 업
+            bassLevel = 6; // 레벨 3로 이동
+            resetLevel();
           }
           break;
-
-        case 5: // 레벨 3 준비 화면
-          displayReadyScreen(3);
-          if (keyIsPressed && keyCode == 32) {
-            bassLevel++;
-            resetLevel(); // 레벨 시작 시 초기화
-          }
-          break;
-
+    
         case 6: // 레벨 3: 어려운 난이도
           playLevel(60, 4, 2);
-          if (bassScore >= 50) {
-            bassLevel++;
-            notes = [];
+          if (gameTimer > 600) { // 10초 후 게임 종료
+            bassLevel = 7; // 엔딩 화면으로 이동
+            resetLevel();
           }
           break;
-
+    
         case 7: // 엔딩 화면
-          displayEndingScreen();
-
-          bassFinal = 10;
-          //베이스의 경우, 점수를 내는 로직이 아니라 될 때까지 해보는 로직인지라
-          //점수를 구현하기가 애매해 보입니다. 그래서 일단 자동 10점으로 기록하고 갈게요.
-          break;
-
-        case 8: // TRY AGAIN 화면 (해당 레벨로 다시 돌아감)
-          text("TRY AGAIN!", _width / 2, _height / 2);
-          fill(100);
-          rect(_width / 2 - 80, 300, 160, 40); // 가운데 위치
-          fill(255);
-          text("Restart Level", _width / 2, 320);
-
-          if (
-            mouseIsPressed &&
-            mouseX > _width / 2 - 80 &&
-            mouseX < _width / 2 + 80 &&
-            mouseY > 300 &&
-            mouseY < 340
-          ) {
-            bassLevel = retryLevel; // 실패한 레벨의 준비 화면으로 이동
-            resetLevel(); // 레벨 초기화 (점수와 놓친 노트 수 초기화)
+          displayEndingScreen(); // 최종 점수 표시
+          // 5초 후 다음 스테이지로 이동
+          if (frameCount % 300 === 0) {
+            currentStage++; // 다음 스테이지로 이동
           }
           break;
       }
-
       break;
 
     case 8: //keyboard intro
