@@ -103,6 +103,8 @@ let guitarRect; //기타 게임용 이미지
 let guitarEntireImage; //기타 전체 이미지
 let guitarEx; //기타 설명 이미지
 
+let filteredHands = []; // 손 위치를 필터링한 데이터
+
 function preload() {
   // Load handPose
   handPose = ml5.handPose();
@@ -602,6 +604,7 @@ function draw() {
       break;
 
     case 8: //keyboard intro
+      console.log(stage);
       image(keyboardIntroImage, 0, 0);
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
@@ -665,6 +668,7 @@ function draw() {
       break;
 
     case 9: //keyboard game explanation
+      console.log(stage);
       image(keyboardEx, 0, 0);
       break;
 
@@ -792,6 +796,7 @@ function draw() {
       break;
 
     case 11: //guitar intro
+      console.log(stage);
       image(guitarIntroImage, 0, 0);
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
@@ -844,8 +849,10 @@ function draw() {
       if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
         soundPlayed = false; // 다시 재생 가능하도록 초기화
       }
+      break;
 
     case 12: //guitar ex
+      console.log(stage);
       image(guitarEx, 0, 0);
       break;
 
@@ -860,36 +867,121 @@ function draw() {
         height / 2 - 30
       );
       image(handHere, width / 2 - 200, height / 2);
+      // 손 데이터 필터링 (lerp 적용)
+      filteredHands = hands.map(hand => {
+        return {
+          keypoints: hand.keypoints.map((kp, idx) => {
+            if (!filteredHands[idx]) {
+              return { x: kp.x, y: kp.y, score: kp.score };
+            }
+            return {
+              x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
+              y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
+              score: kp.score
+            };
+          })
+        };
+      });
 
+      // 비디오와 손가락 시각화 (대기 시간 포함)
       push();
       translate(width, 0);
       scale(-1, 1);
-      //image(video, 0, 0, width, (width * video.height) / video.width); // 비디오 표시
 
-      // 손가락 추적 및 원 그리기
-      for (let i = 0; i < hands.length; i++) {
-        let hand = hands[i];
-        if (hand.keypoints && hand.keypoints[8]) {
-          let keypoint = hand.keypoints[8]; // 검지 손가락
-          fill(255, 255, 0);
-          noStroke();
-          let xPos = keypoint.x; // 비디오 좌표계
-          let yPos = keypoint.y;
+      for (let i = 0; i < filteredHands.length; i++) {
+        let hand = filteredHands[i];
 
-          image(guitarPick, xPos, yPos);
+        // 손가락 위치 순회
+        if (hand.keypoints) {
+          // 손가락 마디를 선으로 연결
+          stroke(0);
+          strokeWeight(3);
+          noFill();
+
+          beginShape();
+          for (let j = 0; j < hand.keypoints.length; j++) {
+            let keypoint = hand.keypoints[j];
+
+            // 신뢰도가 낮은 점은 시각화하지 않음
+            if (keypoint.score < 0.5) continue;
+
+            let xPos = keypoint.x; // 비디오 좌표계
+            let yPos = keypoint.y;
+
+            vertex(xPos, yPos);
+
+            // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
+            if (j === 8) {
+              image(guitarPick, xPos, yPos);
+            }
+          }
+          endShape();
         }
       }
-      pop(); // 좌우 반전 종료
+      pop();
 
       break;
 
     case 14: //guitar game
-      image(backgroundImage, 0, 0); //일반 배경
-      image(guitarRect, 0, 100); // 기타 배경 삽입
+    image(backgroundImage, 0, 0); //일반 배경
+    image(guitarRect, 0, 100); // 기타 배경 삽입
 
       if (!startTimeOfguitar) {
         startTimeOfguitar = millis(); // 게임 시작 시 시간을 초기화
       }
+
+      // 손 데이터 필터링 (lerp 적용)
+      filteredHands = hands.map(hand => {
+        return {
+          keypoints: hand.keypoints.map((kp, idx) => {
+            if (!filteredHands[idx]) {
+              return { x: kp.x, y: kp.y, score: kp.score };
+            }
+            return {
+              x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
+              y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
+              score: kp.score
+            };
+          })
+        };
+      });
+
+      // 비디오와 손가락 시각화 (대기 시간 포함)
+      push();
+      translate(width, 0);
+      scale(-1, 1);
+
+      for (let i = 0; i < filteredHands.length; i++) {
+        let hand = filteredHands[i];
+
+        // 손가락 위치 순회
+        if (hand.keypoints) {
+          // 손가락 마디를 선으로 연결
+          stroke(0);
+          strokeWeight(3);
+          noFill();
+
+          beginShape();
+          for (let j = 0; j < hand.keypoints.length; j++) {
+            let keypoint = hand.keypoints[j];
+
+            // 신뢰도가 낮은 점은 시각화하지 않음
+            if (keypoint.score < 0.5) continue;
+
+            let xPos = keypoint.x; // 비디오 좌표계
+            let yPos = keypoint.y;
+
+            vertex(xPos, yPos);
+
+            // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
+            if (j === 8) {
+              image(guitarPick, xPos, yPos);
+            }
+          }
+          endShape();
+        }
+      }
+      pop();
 
       // 시간 체크
       let elapsedTime = (millis() - startTimeOfguitar) / 1000;
@@ -907,6 +999,9 @@ function draw() {
         return; // 5초가 지나기 전에는 아래 코드를 실행하지 않음
       }
 
+      image(backgroundImage, 0, 0); //일반 배경
+      image(guitarRect, 0, 100); // 기타 배경 삽입
+
       let gameElapsedTime = elapsedTime - 5; // 5초 대기 시간을 제외한 실제 게임 시간
 
       // 스테이지 변경 조건
@@ -915,52 +1010,51 @@ function draw() {
         return;
       }
 
-      // 좌우 반전된 비디오와 손가락 원 그리기
-      push();
-      translate(width, 0);
-      scale(-1, 1);
-
       // 2초마다 네모 위치 변경
       if (frameCount % 120 === 0) {
         rectMode(CORNER);
         generateRects(); // 네모 재생성
       }
 
-      // 손가락 추적 및 원 그리기
-      for (let i = 0; i < hands.length; i++) {
-        let hand = hands[i];
-        if (hand.keypoints && hand.keypoints[8]) {
-          let keypoint = hand.keypoints[8]; // 검지 손가락
-          let xPos = keypoint.x; // 비디오 좌표계
-          let yPos = keypoint.y;
-          image(guitarPick, xPos, yPos);
-
-          // 손가락 위치 좌우 반전 적용
-          let actualXPos = width - xPos;
-
-          // 각 빨간 네모와 충돌 체크
-          for (let j = 0; j < rects.length; j++) {
-            let rectData = rects[j];
-
-            // 충돌 영역의 여유값
-            let padding = 10;
-
-            if (
-              actualXPos > rectData.x - padding &&
-              actualXPos < rectData.x + guitarWidth + padding &&
-              yPos > rectData.y - padding &&
-              yPos < rectData.y + guitarHeight + padding &&
-              !scoreIncrementedRects[j]
-            ) {
-              pointOfGuitar++; // 점수 증가
-              scoreIncrementedRects[j] = true; // 점수 증가 플래그 설정
-              rectData.color = color(0, 0, 255); // 파란색으로 변경
-              rectData.blinkCount = 60; // 깜빡임 카운트 설정
+      for (let i = 0; i < filteredHands.length; i++) {
+        let hand = filteredHands[i];
+    
+        // 손가락 위치 순회
+        if (hand.keypoints) {
+          for (let j = 0; j < hand.keypoints.length; j++) {
+            let keypoint = hand.keypoints[j];
+    
+            // 신뢰도가 낮은 점은 충돌 체크하지 않음
+            if (keypoint.score < 0.5) continue;
+    
+            let xPos = keypoint.x; // 비디오 좌표계
+            let yPos = keypoint.y;
+    
+            // 두 번째 손가락(검지손가락) 충돌 체크
+            if (j === 8) {
+              let actualXPos = width - xPos;
+    
+              // 각 빨간 네모와 충돌 체크
+              for (let k = 0; k < rects.length; k++) {
+                let rectData = rects[k];
+                let padding = 10;
+                if (
+                  actualXPos > rectData.x - padding &&
+                  actualXPos < rectData.x + guitarWidth + padding &&
+                  yPos > rectData.y - padding &&
+                  yPos < rectData.y + guitarHeight + padding &&
+                  !scoreIncrementedRects[k]
+                ) {
+                  pointOfGuitar++; // 점수 증가
+                  scoreIncrementedRects[k] = true; // 점수 증가 플래그 설정
+                  rectData.color = color(0, 0, 255); // 파란색으로 변경
+                  rectData.blinkCount = 60; // 깜빡임 카운트 설정
+                }
+              }
             }
           }
         }
       }
-      pop(); // 좌우 반전 종료
 
       // 기타 줄 그리기
       noFill();
@@ -971,6 +1065,59 @@ function draw() {
           rect(x, y, guitarWidth, guitarHeight);
         }
       }
+
+      // 손 데이터 필터링 (lerp 적용)
+      filteredHands = hands.map(hand => {
+        return {
+          keypoints: hand.keypoints.map((kp, idx) => {
+            if (!filteredHands[idx]) {
+              return { x: kp.x, y: kp.y, score: kp.score };
+            }
+            return {
+              x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
+              y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
+              score: kp.score
+            };
+          })
+        };
+      });
+
+      // 비디오와 손가락 시각화 (대기 시간 포함)
+      push();
+      translate(width, 0);
+      scale(-1, 1);
+
+      for (let i = 0; i < filteredHands.length; i++) {
+        let hand = filteredHands[i];
+
+        // 손가락 위치 순회
+        if (hand.keypoints) {
+          // 손가락 마디를 선으로 연결
+          stroke(0);
+          strokeWeight(3);
+          noFill();
+
+          beginShape();
+          for (let j = 0; j < hand.keypoints.length; j++) {
+            let keypoint = hand.keypoints[j];
+
+            // 신뢰도가 낮은 점은 시각화하지 않음
+            if (keypoint.score < 0.5) continue;
+
+            let xPos = keypoint.x; // 비디오 좌표계
+            let yPos = keypoint.y;
+
+            vertex(xPos, yPos);
+
+            // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
+            if (j === 8) {
+              image(guitarPick, xPos, yPos);
+            }
+          }
+          endShape();
+        }
+      }
+      pop();
 
       // 빨간 네모(혹은 파란 네모) 그리기
       for (let rectData of rects) {

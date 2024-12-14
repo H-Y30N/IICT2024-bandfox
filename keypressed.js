@@ -100,9 +100,9 @@ function keyPressed() {
     if (currentDialogueIndex >= dialogues.length) {
       if (typeof drumFinal == "undefined" && stage == 4) {
       } else if (typeof keyboardFinal == "undefined" && stage == 10) {
-      } else if (typeof GuitarFinal == "undefined" && stage == 14) {
-      } //else if (typeof BassFinal == "undefined" && stage == 7) {
-      //}  //다른 거 다 괜찮은데 왜 여기서만 조건문을 못 벗어나는지 모르겠네요 일단 주석처리...
+      } else if (typeof guitarFinal == "undefined" && stage == 14) {
+      } else if (typeof bassFinal == "undefined" && stage == 7) {
+      } 
       else {
         correct.play();
         stage = (stage + 1) % maxStage;
