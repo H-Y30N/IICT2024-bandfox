@@ -975,7 +975,7 @@ function draw() {
 
       break;
 
-    case 14: //guitar game  
+    case 14: //guitar game
       if (!startTimeOfguitar) {
         startTimeOfguitar = millis(); // 게임 시작 시 시간을 초기화
       }
@@ -1001,7 +1001,7 @@ function draw() {
       translate(width, 0);
       scale(-1, 1);
 
-      image(video,0,0);
+      image(video, 0, 0);
 
       for (let i = 0; i < filteredHands.length; i++) {
         let hand = filteredHands[i];
@@ -1036,7 +1036,6 @@ function draw() {
       }
       pop();
 
-    
       // 시간 체크
       let elapsedTime = (millis() - startTimeOfguitar) / 1000;
 
@@ -1109,7 +1108,6 @@ function draw() {
         }
       }
 
-
       // 손 데이터 필터링 (lerp 적용)
       filteredHands = hands.map((hand) => {
         return {
@@ -1130,7 +1128,7 @@ function draw() {
       push();
       translate(width, 0);
       scale(-1, 1);
-      image(video,0,0);//화면
+      image(video, 0, 0); //화면
       pop();
 
       image(guitarRect, 0, 100);
@@ -1144,10 +1142,10 @@ function draw() {
           rect(x, y, guitarWidth, guitarHeight);
         }
       }
-      
+
       push();
-      translate(width,0);
-      scale(-1,1);
+      translate(width, 0);
+      scale(-1, 1);
       for (let i = 0; i < filteredHands.length; i++) {
         let hand = filteredHands[i];
 
@@ -1243,14 +1241,14 @@ function draw() {
       textFont(choice);
       fill(0);
       strokeWeight(0);
-      if (keyboardFinal == 10) {
+      if (guitarFinal == 10) {
         dialogues = [
           "이런 코드는 어때? \n마음에 들었을까?",
           "흠…….\n아주 마음에 들어!",
           "이런 리프라면 공연 30분 전에 연습 시작해도\n충분히 칠 수 있다고! 난 천재 락스타니까!",
           "그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
         ];
-      } else if (keyboardFinal == 5) {
+      } else if (guitarFinal == 5) {
         dialogues = [
           "이런 코드는 어때? \n마음에 들었을까?",
           "흠…….\n그냥저냥 들어줄 만하네. 조금 복잡한가?",
