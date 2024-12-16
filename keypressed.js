@@ -60,6 +60,7 @@ function keyPressed() {
   } else if (key === "s" || key === "S") {
     if (practiceGame.isPracticeOver) {
       isInPracticeMode = false; // 실전 모드로 전환
+      realGame.pressedTimes = [];
       realGame.startGame(); // 실전 게임 시작
     }
   }
