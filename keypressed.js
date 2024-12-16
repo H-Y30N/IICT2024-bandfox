@@ -22,7 +22,7 @@ function keyPressed() {
           bassScore++; // 점수 증가
           notes[i].hitEffect = true; // 색상 변경을 위한 플래그
           showFeedback("Good"); // 피드백 메시지
-          goodSound.play(); // 효과음 재생
+          bassSlap.play(); // 효과음 재생
 
           // 노트 즉시 삭제
           notes.splice(i, 1);
