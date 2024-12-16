@@ -517,7 +517,7 @@ function draw() {
       switch (bassLevel) {
         case 0: // 게임 오프닝 화면
           strokeWeight(10);
-          stroke(255);
+          stroke(0);
           textAlign(CENTER, CENTER);
           textSize(30);
           text("BASS MINI GAME", _width / 2, _height / 2 - 50);
