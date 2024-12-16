@@ -70,6 +70,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   // 남은 시간 표시
   let remainingTime = ceil((gameDuration - gameTimer) / 60);
   textSize(18);
+  fill(0);
   textAlign(LEFT, TOP);
   text(`Time Left: ${remainingTime}s`, 10, 10);
 }
