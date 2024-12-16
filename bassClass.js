@@ -25,25 +25,9 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   if (frameCount % noteInterval === 0) {
     // noteInterval 주기로 노트 생성
     let simultaneousNoteChance = random(); // 동시에 나올 가능성 결정
-    let numNotesToGenerate;
-
-    // 동시에 나올 노트 개수 설정 (레벨에 따라 다르게 조정)
-    if (bassLevel === 6) {
-      // 레벨 3: 어려운 난이도에서 4개의 노트가 나올 확률을 줄임
-      if (simultaneousNoteChance < 0.1) {
-        numNotesToGenerate = 4; // 10% 확률로 4개의 노트 생성
-      } else if (simultaneousNoteChance < 0.4) {
-        numNotesToGenerate = floor(random(2, 4)); // 40% 확률로 2~3개의 노트 생성
-      } else {
-        numNotesToGenerate = 1; // 나머지 경우에는 1개의 노트 생성
-      }
-    } else {
-      if (simultaneousNoteChance < 0.4) {
-        numNotesToGenerate = floor(random(1, maxSimultaneousNotes + 1)); // 여러 개의 노트 생성
-      } else {
-        numNotesToGenerate = 1; // 나머지 경우에는 하나의 노트 생성
-      }
-    }
+    let numNotesToGenerate = (simultaneousNoteChance < 0.4)
+    ? floor(random(1, maxSimultaneousNotes + 1))
+    : 1;
 
     // 선택된 개수의 노트 생성
     let selectedStrings = getRandomStrings(numNotesToGenerate);
@@ -60,7 +44,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
       notes[i].update();
       notes[i].show();
 
-      if (notes[i].x > width) {
+      if (notes[i].x > width && !notes[i].hitEffect) {
         notes.splice(i, 1); // 화면을 벗어나면 삭제
         missedNotes++;
         showFeedback("Miss");
@@ -70,7 +54,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
 
   // 상단 점수 및 남은 시간 표시
   textAlign(RIGHT, TOP);
-  text(`Score: ${score}`, width - 10, 10);
+  text(`Score: ${bassScore}`, width - 10, 10);
   text(`Missed: ${missedNotes}`, width - 10, 40);
 
   // 피드백 메시지 표시
@@ -87,6 +71,12 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   textAlign(LEFT, TOP);
   text(`Time Left: ${remainingTime}s`, 10, 10);
 }
+
+function showFeedback(feedback) {
+  feedbackText = feedback;
+  feedbackTimer = 30;
+}
+
 
 function getRandomStrings(count) {
   let available = [0, 1, 2, 3];
@@ -115,17 +105,16 @@ function resetLevel() {
 
 function displayReadyScreen(levelNumber) {
   fill(255);
-  text(`READY FOR LEVEL ${levelNumber}?`, _width / 2, _height / 2 - 10);
-  text("Press Space to start", _width / 2, _height / 2 + 30);
+  text("Press Space to start", _width / 2, _height / 2);
 }
 
 function displayEndingScreen() {
-  let finalScore = max(score - missedNotes * 2, 0);
+  let finalScore = max(bassScore*2 - missedNotes, 0);
   textSize(32);
   textAlign(CENTER, CENTER);
   fill(255);
-  text("Game Over!", _width / 2, _height / 2 - 50);
-  text(`Final Score: ${finalScore}`, _width / 2, _height / 2);
+  text("Your Score is", _width / 2, _height / 2 - 50);
+  text(`${finalScore}`, _width / 2, _height / 2);
 }
 
 
