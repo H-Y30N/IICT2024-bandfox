@@ -75,7 +75,7 @@ let bassEx; //베이스 게임 설명 이미지
 let feedbackText = "";
 let feedbackTimer = 0;
 let gameTimer = 0;
-let gameDuration = 2400;
+let gameDuration = 3600;
 
 //키보드 관련 전역변수
 let score = 0;
@@ -219,6 +219,7 @@ function draw() {
   switch (stage) {
     case 0: //Opening
       stageChange = true;
+      imageMode(CORNER);
       image(openingImage, 0, 0);
       fill(255);
       stroke(192, 140, 43);
@@ -418,6 +419,7 @@ function draw() {
       break;
 
     case 3: //Drum Game Explanation
+      imageMode(CORNER);
       image(drumEx, 0, 0);
       break;
 
@@ -761,6 +763,7 @@ function draw() {
             isDisplaying = false;
           } else {
           }
+          imageMode(CENTER);
           image(keyboardIntroImage, width / 2, height / 2);
           //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
           //console.log(currentDialogueIndex);
@@ -769,8 +772,9 @@ function draw() {
           //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
           //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
           if (currentDialogueIndex <= 0) {
+            imageMode(CENTER);
             image(dialogueFox, width / 2, height / 2);
-          } else image(dialogueRabbit, width / 2, height / 2);
+          } else imageMode(CENTER); image(dialogueRabbit, width / 2, height / 2);
           textSize(18);
           textFont(choice);
           fill(0);
@@ -805,9 +809,10 @@ function draw() {
           }
           //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
           if (currentDialogueIndex == 0) {
+            textAlign(LEFT,CENTER);
             text(dialogues[0], width / 2, height - 70);
             //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-          } else text(displayedText, width / 2, height - 70);
+          } else textAlign(LEFT, CENTER); text(displayedText, width / 2, height - 70);
           //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
           textAlign(CENTER, CENTER);
           //여기까지 복사하시면 됩니다.
@@ -834,6 +839,7 @@ function draw() {
 
     case 11: //guitar intro
       console.log(stage);
+      imageMode(CORNER);
       image(guitarIntroImage, 0, 0);
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
@@ -1186,7 +1192,7 @@ function draw() {
       break;
 
     case 15: //guitar result
-      //background(255);
+      background(255);
       //textAlign(CENTER, CENTER);
       //textSize(32);
       //text("Game Over!", width / 2, height / 2 - 30);
@@ -1206,6 +1212,7 @@ function draw() {
         isDisplaying = false;
       } else {
       }
+      imageMode(CENTER);
       image(guitarIntroImage, width / 2, height / 2);
       //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
       //console.log(currentDialogueIndex);
