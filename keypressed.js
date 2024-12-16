@@ -9,21 +9,19 @@ function keyPressed() {
   // 키 입력 처리
   if (key.toLowerCase() in keyMap) {
     let stringIndex = keyMap[key.toLowerCase()];
-    console.log(`Pressed key: ${key}, String index: ${stringIndex}`); // 키 입력 로그
-
     for (let i = notes.length - 1; i >= 0; i--) {
-      if (notes[i] && notes[i].y === strings[stringIndex]) {
+      if (notes[i] && notes[i].y === strings[stringIndex] && !notes[i].hitEffect) {
         let distance = Math.abs(notes[i].x - (width - 50));
         if (distance < 30) {
           // 올바른 입력 처리
-          console.log("Note hit!");
-          bassScore += 1; // 점수 증가
+          //console.log("Note hit!");
+          bassScore++; // 점수 증가
           notes[i].hitEffect = true; // 색상 변경을 위한 플래그
           showFeedback("Good"); // 피드백 메시지
           goodSound.play(); // 효과음 재생
 
-          // 100ms 후 노트를 삭제
-          setTimeout(() => notes.splice(i, 1), 100);
+          // 노트 즉시 삭제
+          notes.splice(i, 1);
           return; // 조건 만족 시 루프 종료
         }
       }
@@ -32,6 +30,7 @@ function keyPressed() {
     missedNotes++; // 놓친 노트 증가
     showFeedback("Miss"); // Miss 메시지
   }
+
 
   //드럼 관련 함수
   let drumSound = false;
