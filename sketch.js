@@ -809,10 +809,10 @@ function draw() {
           }
           //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
           if (currentDialogueIndex == 0) {
-            textAlign(LEFT,CENTER);
+            textAlign(CENTER,CENTER);
             text(dialogues[0], width / 2, height - 70);
             //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-          } else textAlign(LEFT, CENTER); text(displayedText, width / 2, height - 70);
+          } else textAlign(CENTER, CENTER); text(displayedText, width / 2, height - 70);
           //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
           textAlign(CENTER, CENTER);
           //여기까지 복사하시면 됩니다.
