@@ -181,7 +181,7 @@ function preload() {
   catVoice = loadSound("assets/catVoice.mp3");
   hmmSound = loadSound("assets/hmmSound.mp3");
   count = loadSound("assets/count.mp3");
-  goodSound = loadSound("assets/bassSlap.wav");
+  bassSlap = loadSound("assets/bassSlap.wav");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
