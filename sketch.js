@@ -32,6 +32,7 @@ let keyboardRabbit; //토끼 이미지
 let guitarCat; //고양이 이미지
 let backgroundImage; //기본 배경
 let everyone;
+let bassBackground;
 
 //대사창 파일
 let dialogueFox;
@@ -74,7 +75,6 @@ let feedbackText = "";
 let feedbackTimer = 0;
 let gameTimer = 0;
 let gameDuration = 3600;
-
 
 //키보드 관련 전역변수
 let score = 0;
@@ -136,6 +136,7 @@ function preload() {
   bassEx = loadImage("assets/bassEx.png");
   guitarEx = loadImage("assets/guitarEx.png");
   everyone = loadImage("assets/everyone.png");
+  bassBackground = loadImage("assets/bassBackground2.png");
 
   drumPractice = loadImage("assets/drumPractice.png");
   drumPracticeStart = loadImage("assets/drumPracticeStart.png");
@@ -500,27 +501,29 @@ function draw() {
       break;
 
     case 6: // bass explanation
-    image(bassEx, 0, 0);
-    break;
-    
+      image(bassEx, 0, 0);
+      break;
+
     case 7: // bass game
       background(0);
+      image(bassBackground, 0, 0);
       switch (bassLevel) {
         case 0: // 게임 오프닝 화면
           strokeWeight(10);
+          stroke(255);
           textAlign(CENTER, CENTER);
           textSize(30);
           text("BASS MINI GAME", _width / 2, _height / 2 - 50);
           fill(100);
           text("Press Space to Start", _width / 2, 300);
-    
+
           // 스페이스바 입력으로 게임 시작
           if (keyIsPressed && keyCode === 32) {
             bassLevel = 4; // 레벨 2 시작
             resetLevel();
           }
           break;
-    
+
         /*case 2: // 레벨 1: 쉬운 난이도
           playLevel(100, 2, 1.3);
           if (gameTimer >= gameDuration) { // 10초 후 레벨 업
@@ -528,21 +531,23 @@ function draw() {
             
           }
           break;*/
-    
+
         case 4: // 레벨 2: 중간 난이도
           playLevel(80, 3, 1.6);
-          if (gameTimer >= 1800) { // 30초 후 레벨 업
+          if (gameTimer >= 1800) {
+            // 30초 후 레벨 업
             bassLevel = 6; // 레벨 3로 이동
           }
           break;
-    
+
         case 6: // 레벨 3: 어려운 난이도
           playLevel(60, 4, 2);
-          if (gameTimer > gameDuration) { // 10초 후 게임 종료
+          if (gameTimer > gameDuration) {
+            // 10초 후 게임 종료
             bassLevel = 7; // 엔딩 화면으로 이동
           }
           break;
-    
+
         case 7: // 엔딩 화면
           displayEndingScreen(); // 최종 점수 표시
           // 5초 후 다음 스테이지로 이동
@@ -733,14 +738,92 @@ function draw() {
 
         case 8:
           if (score >= 70) {
-            text("GOOD JOB", width / 2, height / 2);
+            //text("GOOD JOB", width / 2, height / 2);
             keyboardFinal = 10;
           } else if (30 <= score && score < 70) {
-            text("NOT BAD", width / 2, height / 2);
+            //text("NOT BAD", width / 2, height / 2);
             keyboardFinal = 5;
           } else if (score < 30) {
-            text("FXXK YOU", width / 2, height / 2);
+            //text("FXXK YOU", width / 2, height / 2);
             keyboardFinal = 0;
+          }
+          //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
+          //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
+          //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
+
+          //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
+          if (currentDialogueIndex > dialogues.length && !isDisplaying) {
+            currentDialogueIndex = 0;
+            isDisplaying = false;
+          } else {
+          }
+          image(keyboardIntroImage, width / 2, height / 2);
+          //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
+          //console.log(currentDialogueIndex);
+
+          //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
+          //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
+          //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+          if (currentDialogueIndex <= 0) {
+            image(dialogueFox, width / 2, height / 2);
+          } else image(dialogueRabbit, width / 2, height / 2);
+          textSize(18);
+          textFont(choice);
+          fill(0);
+          strokeWeight(0);
+          if (keyboardFinal == 10) {
+            dialogues = [
+              "비스카차에게는 전화로 작곡한 곡을 들려주기로 했다.",
+              "(뚜르르……. 뚜르르…….)",
+              "응? 무슨 일이야? 아, 곡 만들고 있구나!\n흠, 이 정도면 돌아가서 금방 익힐 거야, 나도!",
+              "가성비 좋게 잘 만들었네.\n역시 여우야!",
+              "그나저나 기타한테도 물어봤어?\n걔도 어지간한 기분파인데, 잘 맞춰 봐.",
+              "나는 다시 일광욕 하러 이만!",
+            ];
+          } else if (keyboardFinal == 5) {
+            dialogues = [
+              "비스카차에게는 전화로 작곡한 곡을 들려주기로 했다.",
+              "(뚜르르……. 뚜르르…….)",
+              "응? 무슨 일이야? 아, 곡 만들고 있구나!\n뭐, 좀 까다롭긴 하지만 못 칠 정도는 아니네.",
+              "돌아가서 연습 좀 해봐야겠는걸?",
+              "그나저나 기타한테도 물어봤어?\n걔도 어지간한 기분파인데, 잘 맞춰 봐.",
+              "나는 다시 일광욕 하러 이만!",
+            ];
+          } else {
+            dialogues = [
+              "비스카차에게는 전화로 작곡한 곡을 들려주기로 했다.",
+              "(뚜르르……. 뚜르르…….)",
+              "응? 무슨 일이야? 아, 곡 만들고 있구나!\n……그런데 이건 좀 아니지 않아?",
+              "어떻게 해도 내가 따라잡기 어려운 난이도잖아?\n나만 여기 와있다고 따돌리는 거 아니지?",
+              "그나저나 기타한테도 물어봤어?\n걔도 어지간한 기분파인데, 잘 맞춰 봐.",
+              "나는 다시 일광욕 하러 이만!",
+            ];
+          }
+          //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
+          if (currentDialogueIndex == 0) {
+            text(dialogues[0], width / 2, height - 70);
+            //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
+          } else text(displayedText, width / 2, height - 70);
+          //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
+          textAlign(CENTER, CENTER);
+          //여기까지 복사하시면 됩니다.
+
+          if (
+            currentDialogueIndex > 0 &&
+            currentCharIndex % 9 === 0 &&
+            currentCharIndex < dialogues[currentDialogueIndex].length &&
+            keyCode == ENTER &&
+            !soundPlayed // 이미 재생된 경우 방지
+          ) {
+            if (currentDialogueIndex <= 0) {
+              foxVoice.play();
+            } else rabbitVoice.play();
+            soundPlayed = true; // 소리 재생 여부 설정
+          }
+
+          // 조건이 변할 때 플래그 초기화
+          if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+            soundPlayed = false; // 다시 재생 가능하도록 초기화
           }
       }
       break;
@@ -809,16 +892,19 @@ function draw() {
     case 13: // how to play guitar
       image(backgroundImage, 0, 0);
       image(guitarEntireImage, 0, height / 2 - 200);
-      textSize(30);
+      textSize(24);
       textAlign(CENTER, CENTER);
+      fill(0);
+      stroke(90);
+      strokeWeight(3);
       text(
-        "손으로 연주하는 거야! \n 준비되면 →를 눌러!",
+        "카메라를 봐,\n네 손으로 연주하는 거야! \n\n준비되면 →를 눌러!",
         width / 2,
         height / 2 - 30
       );
       image(handHere, width / 2 - 200, height / 2);
       // 손 데이터 필터링 (lerp 적용)
-      filteredHands = hands.map(hand => {
+      filteredHands = hands.map((hand) => {
         return {
           keypoints: hand.keypoints.map((kp, idx) => {
             if (!filteredHands[idx]) {
@@ -827,9 +913,9 @@ function draw() {
             return {
               x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
               y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
-              score: kp.score
+              score: kp.score,
             };
-          })
+          }),
         };
       });
 
@@ -873,15 +959,15 @@ function draw() {
       break;
 
     case 14: //guitar game
-    image(backgroundImage, 0, 0); //일반 배경
-    image(guitarRect, 0, 100); // 기타 배경 삽입
+      image(backgroundImage, 0, 0); //일반 배경
+      image(guitarRect, 0, 100); // 기타 배경 삽입
 
       if (!startTimeOfguitar) {
         startTimeOfguitar = millis(); // 게임 시작 시 시간을 초기화
       }
 
       // 손 데이터 필터링 (lerp 적용)
-      filteredHands = hands.map(hand => {
+      filteredHands = hands.map((hand) => {
         return {
           keypoints: hand.keypoints.map((kp, idx) => {
             if (!filteredHands[idx]) {
@@ -890,9 +976,9 @@ function draw() {
             return {
               x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
               y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
-              score: kp.score
+              score: kp.score,
             };
-          })
+          }),
         };
       });
 
@@ -968,22 +1054,22 @@ function draw() {
 
       for (let i = 0; i < filteredHands.length; i++) {
         let hand = filteredHands[i];
-    
+
         // 손가락 위치 순회
         if (hand.keypoints) {
           for (let j = 0; j < hand.keypoints.length; j++) {
             let keypoint = hand.keypoints[j];
-    
+
             // 신뢰도가 낮은 점은 충돌 체크하지 않음
             if (keypoint.score < 0.5) continue;
-    
+
             let xPos = keypoint.x; // 비디오 좌표계
             let yPos = keypoint.y;
-    
+
             // 두 번째 손가락(검지손가락) 충돌 체크
             if (j === 8) {
               let actualXPos = width - xPos;
-    
+
               // 각 빨간 네모와 충돌 체크
               for (let k = 0; k < rects.length; k++) {
                 let rectData = rects[k];
@@ -1017,7 +1103,7 @@ function draw() {
       }
 
       // 손 데이터 필터링 (lerp 적용)
-      filteredHands = hands.map(hand => {
+      filteredHands = hands.map((hand) => {
         return {
           keypoints: hand.keypoints.map((kp, idx) => {
             if (!filteredHands[idx]) {
@@ -1026,9 +1112,9 @@ function draw() {
             return {
               x: lerp(filteredHands[idx]?.x || kp.x, kp.x, 0.2),
               y: lerp(filteredHands[idx]?.y || kp.y, kp.y, 0.2),
-              score: kp.score
+              score: kp.score,
             };
-          })
+          }),
         };
       });
 
@@ -1096,15 +1182,88 @@ function draw() {
       break;
 
     case 15: //guitar result
-      background(255);
-      textAlign(CENTER, CENTER);
-      textSize(32);
-      text("Game Over!", width / 2, height / 2 - 30);
-      text("Final Score: " + pointOfGuitar, width / 2, height / 2 + 30);
+      //background(255);
+      //textAlign(CENTER, CENTER);
+      //textSize(32);
+      //text("Game Over!", width / 2, height / 2 - 30);
+      //text("Final Score: " + pointOfGuitar, width / 2, height / 2 + 30);
 
       if (pointOfGuitar >= 20) guitarFinal = 10;
       else if (pointOfGuitar < 20 && pointOfGuitar > 5) guitarFinal = 5;
       else if (pointOfGuitar < 5) guitarFinal = 0;
+
+      //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
+      //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
+      //추가한다면 "대사","대사", 식으로 더 넣으면 됩니다.
+
+      //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
+      if (currentDialogueIndex > dialogues.length && !isDisplaying) {
+        currentDialogueIndex = 0;
+        isDisplaying = false;
+      } else {
+      }
+      image(guitarIntroImage, width / 2, height / 2);
+      //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
+      //console.log(currentDialogueIndex);
+
+      //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
+      //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
+      //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      if (currentDialogueIndex <= 0) {
+        image(dialogueFox, width / 2, height / 2);
+      } else image(dialogueCat, width / 2, height / 2);
+      textSize(18);
+      textFont(choice);
+      fill(0);
+      strokeWeight(0);
+      if (keyboardFinal == 10) {
+        dialogues = [
+          "이런 코드는 어때? \n마음에 들었을까?",
+          "흠…….\n아주 마음에 들어!",
+          "이런 리프라면 공연 30분 전에 연습 시작해도\n충분히 칠 수 있다고! 난 천재 락스타니까!",
+          "그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+        ];
+      } else if (keyboardFinal == 5) {
+        dialogues = [
+          "이런 코드는 어때? \n마음에 들었을까?",
+          "흠…….\n그냥저냥 들어줄 만하네. 조금 복잡한가?",
+          "하지만 이 천재 락스타는 충분히 칠 수 있지.\n귀찮겠지만 연습은 해야겠네.",
+          "그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+        ];
+      } else {
+        dialogues = [
+          "이런 코드는 어때? \n마음에 들었을까?",
+          "흠…….\n내가 분명 연습하기 귀찮다고 했을 텐데?",
+          "밴드 자작곡을 쓰는 이유가 뭐라고 생각하는 거야?\n이 천재 락스타에게 맞춰주려고 그런 게 아니었어?",
+          "에휴…….그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+        ];
+      }
+      //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
+      if (currentDialogueIndex == 0) {
+        text(dialogues[0], width / 2, height - 70);
+        //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
+      } else text(displayedText, width / 2, height - 70);
+      //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
+      textAlign(CENTER, CENTER);
+      //여기까지 복사하시면 됩니다.
+
+      if (
+        currentDialogueIndex > 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
+      ) {
+        if (currentDialogueIndex <= 0) {
+          foxVoice.play();
+        } else catVoice.play();
+        soundPlayed = true; // 소리 재생 여부 설정
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
+      }
       break;
 
     case 16: // 최종 결과
