@@ -61,6 +61,7 @@ let isInPracticeMode = true;
 let drumPractice; // 드럼 연습 이미지
 let drumPracticeStart;
 let drumPracticeComplete;
+let drumSize = false;
 
 let drumDifferent = 0;
 
@@ -137,7 +138,7 @@ function preload() {
   bassEx = loadImage("assets/bassEx.png");
   guitarEx = loadImage("assets/guitarEx.png");
   everyone = loadImage("assets/everyone.png");
-  bassBackground = loadImage("assets/bassBackground2.png");
+  bassBackground = loadImage("assets/bassBackground.png");
 
   drumPractice = loadImage("assets/drumPractice.png");
   drumPracticeStart = loadImage("assets/drumPracticeStart.png");
@@ -181,7 +182,7 @@ function preload() {
   catVoice = loadSound("assets/catVoice.mp3");
   hmmSound = loadSound("assets/hmmSound.mp3");
   count = loadSound("assets/count.mp3");
-  bassSlap = loadSound("assets/bassSlap.wav");
+  bassSlap = loadSound("assets/bassSlap2.wav");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
@@ -228,9 +229,10 @@ function draw() {
       textAlign(CENTER, CENTER);
       text("밴드맨으로\n살아남기", 150, height / 2 - 100);
       strokeWeight(0);
-      textSize(16);
-      fill(50);
-      text("계속하려면 ENTER 키를 누르세요.", 150, height / 2);
+      textSize(14);
+      fill(126, 105, 87);
+      textFont(choice);
+      text("계속하려면 ENTER 키를 누르세요.", 150, height / 2 - 20);
 
       //BGM 플레이 코드 (추가)
       if (!bgmPlaying) {
@@ -294,6 +296,7 @@ function draw() {
         image(gameIntroImage2, 0, 0);
       else image(gameIntroImage, 0, 0);
 
+      fill(0);
       textSize(18);
       textFont(choice);
       dialogues = [
@@ -345,7 +348,7 @@ function draw() {
 
       //목소리 재생
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&
@@ -400,7 +403,7 @@ function draw() {
       } else text(displayedText, width / 2, height - 70);
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&
@@ -487,7 +490,7 @@ function draw() {
       //여기까지 복사하시면 됩니다.
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&
@@ -609,7 +612,7 @@ function draw() {
       //여기까지 복사하시면 됩니다.
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&
@@ -774,7 +777,8 @@ function draw() {
           if (currentDialogueIndex <= 0) {
             imageMode(CENTER);
             image(dialogueFox, width / 2, height / 2);
-          } else imageMode(CENTER); image(dialogueRabbit, width / 2, height / 2);
+          } else imageMode(CENTER);
+          image(dialogueRabbit, width / 2, height / 2);
           textSize(18);
           textFont(choice);
           fill(0);
@@ -808,17 +812,19 @@ function draw() {
             ];
           }
           //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
+          textAlign(CENTER, CENTER);
           if (currentDialogueIndex == 0) {
-            textAlign(LEFT,CENTER);
+            textAlign(LEFT, CENTER);
             text(dialogues[0], width / 2, height - 70);
             //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
-          } else textAlign(LEFT, CENTER); text(displayedText, width / 2, height - 70);
+          } else textAlign(LEFT, CENTER);
+          text(displayedText, width / 2, height - 70);
           //대사 외의 폰트 정렬을 위해 다시 센터 정렬로 돌려놓습니다.
           textAlign(CENTER, CENTER);
           //여기까지 복사하시면 됩니다.
 
           if (
-            currentDialogueIndex > 0 &&
+            currentDialogueIndex >= 0 &&
             currentCharIndex % 9 === 0 &&
             currentCharIndex < dialogues[currentDialogueIndex].length &&
             keyCode == ENTER &&
@@ -878,7 +884,7 @@ function draw() {
       //여기까지 복사하시면 됩니다.
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&
@@ -904,7 +910,7 @@ function draw() {
       image(guitarEntireImage, 0, height / 2 - 200);
       textSize(24);
       textAlign(CENTER, CENTER);
-      fill(0);
+      fill(255);
       stroke(90);
       strokeWeight(3);
       text(
@@ -1259,7 +1265,7 @@ function draw() {
       //여기까지 복사하시면 됩니다.
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&

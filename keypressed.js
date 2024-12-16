@@ -107,13 +107,14 @@ function keyPressed() {
     }
 
     if (currentDialogueIndex >= dialogues.length) {
-      /*if (typeof drumFinal == "undefined" && stage == 4) {
+      if (typeof drumFinal == "undefined" && stage == 4) {
       } else if (typeof keyboardFinal == "undefined" && stage == 10) {
       } else if (typeof guitarFinal == "undefined" && stage == 14) {
       } else if (typeof bassFinal == "undefined" && stage == 7) {
-      } else {*/
-      correct.play();
-      stage = (stage + 1) % maxStage;
+      } else {
+        correct.play();
+        stage = (stage + 1) % maxStage;
+      }
     }
   }
 }

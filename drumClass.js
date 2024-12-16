@@ -13,20 +13,26 @@ class Snare {
     image(snareImage, this.x, this.y, this.w, this.h); // 이미지 그리기
 
     textAlign(CENTER, CENTER);
-    if (!drumSnare && stage == 4) textSize(40);
-    else textSize(35);
-    fill(255);
-    stroke(173, 155, 81);
+    if (drumSize) {
+      textSize(40);
+      fill(159, 254, 241);
+    } else {
+      textSize(35);
+      fill(255);
+    }
+    stroke(130, 100, 81);
     strokeWeight(4);
     text("SPACE", width / 2, 420);
   }
 
   enlarge(factor) {
+    drumSize = true;
     this.w *= factor;
     this.h *= factor;
   }
 
   resetSize() {
+    drumSize = false;
     this.w = this.originalW;
     this.h = this.originalH;
   }
@@ -179,7 +185,7 @@ class DrumGame {
       //여기까지 복사하시면 됩니다.
 
       if (
-        currentDialogueIndex > 0 &&
+        currentDialogueIndex >= 0 &&
         currentCharIndex % 9 === 0 &&
         currentCharIndex < dialogues[currentDialogueIndex].length &&
         keyCode == ENTER &&

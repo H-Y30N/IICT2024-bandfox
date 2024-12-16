@@ -55,6 +55,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
 
   // 상단 점수 및 남은 시간 표시
   textAlign(RIGHT, TOP);
+  fill(0);
   text(`Score: ${bassScore}`, width - 10, 10);
   text(`Missed: ${missedNotes}`, width - 10, 40);
 
@@ -177,7 +178,7 @@ function displayEndingScreen() {
   //여기까지 복사하시면 됩니다.
 
   if (
-    currentDialogueIndex > 0 &&
+    currentDialogueIndex >= 0 &&
     currentCharIndex % 9 === 0 &&
     currentCharIndex < dialogues[currentDialogueIndex].length &&
     keyCode == ENTER &&
