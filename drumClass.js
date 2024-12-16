@@ -11,6 +11,13 @@ class Snare {
   display() {
     imageMode(CENTER);
     image(snareImage, this.x, this.y, this.w, this.h); // 이미지 그리기
+
+    textAlign(CENTER, CENTER);
+    textSize(35);
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
+    text("SPACE", width/2, 420);
   }
 
   enlarge(factor) {
@@ -98,6 +105,14 @@ class DrumGame {
       let userBPM = this.calculateUserBPM();
       this.missionGauge.display(userBPM);
       this.updateGame();
+
+      let targetBPMX = this.missionGauge.getTargetBPMX();
+      textAlign(CENTER, TOP);
+      textSize(12);
+      fill(255);
+      stroke(0);
+      strokeWeight(2);
+      text("현재 속도: " + userBPM.toFixed(0) + " BPM", targetBPMX, 10);
     } else {
       textAlign(CENTER, CENTER);
       textSize(32);
@@ -132,6 +147,10 @@ class MissionGuage {
     this.userBPM = 0;
   }
 
+  getTargetBPMX() {
+    return map(this.targetBPM, 100, 360, this.x - this.w /2, this.x + this.w /2);
+  }
+
   display(userBPM) {
     this.drawGradient(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h);
 
@@ -147,30 +166,19 @@ class MissionGuage {
     text("100 BPM", this.x - this.w / 2, this.y + this.h / 2 + 5);
     text("360 BPM", this.x + this.w / 2, this.y + this.h / 2 + 5);
 
-    let targetBpmX = map(
-      this.targetBPM,
-      100,
-      360,
-      this.x - this.w / 2,
-      this.x + this.w / 2
-    );
-    fill(0);
-    rect(targetBpmX, this.y, 4, 30);
-    text(this.targetBPM + " BPM", targetBpmX, this.y + this.h / 2 + 8);
-
-    let userBpmX = map(
-      userBPM,
-      100,
-      360,
-      this.x - this.w / 2,
-      this.x + this.w / 2
-    );
+    let targetBpmX = this.getTargetBPMX();
     fill(255, 255, 51);
     stroke(0);
     strokeWeight(2);
-    rect(userBpmX, this.y, 8, 50);
-    textSize(15);
-    text(userBPM.toFixed(0) + " BPM", userBpmX, this.y + this.h / 2 + 22);
+    rect(targetBpmX, this.y, 8, 50);
+    textSize(15);    
+    text("얼음이 녹는 속도\n" + this.targetBPM + " BPM", targetBpmX, this.y + this.h / 2 + 22);
+
+    let userBpmX = map(userBPM, 100, 360, this.x - this.w / 2, this.x + this.w / 2);
+    fill(255);
+    stroke(0);
+    strokeWeight(2); 
+    rect(userBpmX, this.y, 6, 40);
   }
 
   drawGradient(x, y, w, h) {
@@ -244,6 +252,19 @@ class PracticeMode {
       this.missionGauge.display(userBPM);
       imageMode(CORNER);
       image(drumPractice, 0, 0);
+
+      textAlign(CENTER, TOP);
+      textSize(12);
+      fill(255);
+      stroke(0);
+      strokeWeight(2);
+      if (this.pressedTimes.length == 0) {
+        text("스페이스 바 연타!!", width/2, 10);
+      } else if (userBPM <= 150) {
+        text("더 빠르게!!", width/2, 10);
+      } else {
+        text("현재 속도: " + userBPM.toFixed(0) + " BPM", width/2, 10);
+      }
     } else {
       textAlign(CENTER, CENTER);
       textSize(32);
