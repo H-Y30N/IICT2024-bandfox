@@ -1281,6 +1281,7 @@ function draw() {
       bgm.stop();
       bgmPlaying = false;
 
+      imageMode(CORNER);
       image(scoreImage, 0, 0);
       strokeWeight(0);
       textSize(10);
