@@ -1,24 +1,23 @@
 function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
   gameTimer++;
   // 줄 그리기
-  stroke(255);
-  strokeWeight(4);
+  stroke(0);
+  strokeWeight(10);
   for (let y of strings) {
     line(0, y, width, y);
   }
 
   // 목표 지점 그리기 (빈 동그라미 형태)
-  noFill();
-  stroke(255);
-  strokeWeight(2);
+  stroke(0);
+  fill(255);
+  strokeWeight(5);
   const displayKeys = ["9", "I", "J", "N"]; // 표시되는 키 순서
   for (let i = 0; i < strings.length; i++) {
-    ellipse(width - 50, strings[i], 40); // 목표 지점 원
-    textSize(16);
+    ellipse(width - 50, strings[i], 60); // 목표 지점 원
+    textSize(20);
     textAlign(CENTER, CENTER);
     fill(255); // 텍스트 색상
     text(displayKeys[i], width - 50, strings[i]); // 목표 원 내부에 키 표시
-    noFill(); // 원 내부 비우기 유지
   }
 
   // 노트 생성
@@ -55,6 +54,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
 
   // 상단 점수 및 남은 시간 표시
   textAlign(RIGHT, TOP);
+  textSize(25);
   fill(0);
   text(`Score: ${bassScore}`, width - 10, 10);
   text(`Missed: ${missedNotes}`, width - 10, 40);
@@ -69,8 +69,7 @@ function playLevel(noteInterval, maxSimultaneousNotes, speedMultiplier) {
 
   // 남은 시간 표시
   let remainingTime = ceil((gameDuration - gameTimer) / 60);
-  textSize(18);
-  fill(0);
+  textSize(25);
   textAlign(LEFT, TOP);
   text(`Time Left: ${remainingTime}s`, 10, 10);
 }
@@ -201,7 +200,7 @@ class Note {
   constructor(x, y, speedMultiplier, key) {
     this.x = x;
     this.y = y;
-    this.size = 30;
+    this.size = 60;
     this.speed = 2 * speedMultiplier;
     this.hitEffect = false; // 맞춘 효과 활성화 상태
     this.key = key; // 노트에 표시될 키
@@ -212,10 +211,10 @@ class Note {
   }
 
   show() {
-    fill(this.hitEffect ? color(0, 0, 255) : color(255, 0, 0)); // 맞춘 노트: 파란색, 기본: 빨간색
+    fill(this.hitEffect ? color('#00FFFF') : color('#ACE5EE')); // 맞춘 노트: 파란색, 기본: 빨간색
     ellipse(this.x, this.y, this.size);
     fill(255); // 텍스트 색상
-    textSize(14);
+    textSize(20);
     textAlign(CENTER, CENTER);
     text(this.key, this.x, this.y); // 노트에 표시되는 키
   }
