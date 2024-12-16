@@ -1,6 +1,6 @@
 function keyPressed() {
   let keyMap = {
-    "9": 0, // 첫 번째 줄
+    9: 0, // 첫 번째 줄
     i: 1, // 두 번째 줄
     j: 2, // 세 번째 줄
     n: 3, // 네 번째 줄
@@ -10,7 +10,11 @@ function keyPressed() {
   if (key.toLowerCase() in keyMap) {
     let stringIndex = keyMap[key.toLowerCase()];
     for (let i = notes.length - 1; i >= 0; i--) {
-      if (notes[i] && notes[i].y === strings[stringIndex] && !notes[i].hitEffect) {
+      if (
+        notes[i] &&
+        notes[i].y === strings[stringIndex] &&
+        !notes[i].hitEffect
+      ) {
         let distance = Math.abs(notes[i].x - (width - 50));
         if (distance < 30) {
           // 올바른 입력 처리
@@ -30,8 +34,6 @@ function keyPressed() {
     missedNotes++; // 놓친 노트 증가
     showFeedback("Miss"); // Miss 메시지
   }
-
-
 
   //드럼 관련 함수
   let drumSound = false;
@@ -105,15 +107,13 @@ function keyPressed() {
     }
 
     if (currentDialogueIndex >= dialogues.length) {
-      if (typeof drumFinal == "undefined" && stage == 4) {
+      /*if (typeof drumFinal == "undefined" && stage == 4) {
       } else if (typeof keyboardFinal == "undefined" && stage == 10) {
       } else if (typeof guitarFinal == "undefined" && stage == 14) {
       } else if (typeof bassFinal == "undefined" && stage == 7) {
-      } 
-      else {
-        correct.play();
-        stage = (stage + 1) % maxStage;
-      }
+      } else {*/
+      correct.play();
+      stage = (stage + 1) % maxStage;
     }
   }
 }

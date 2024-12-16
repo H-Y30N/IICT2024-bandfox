@@ -13,7 +13,7 @@ class Snare {
     image(snareImage, this.x, this.y, this.w, this.h); // 이미지 그리기
 
     textAlign(CENTER, CENTER);
-    if (!drumSound && stage == 4) textSize(40);
+    if (!drumSnare && stage == 4) textSize(40);
     else textSize(35);
     fill(255);
     stroke(173, 155, 81);

@@ -49,6 +49,7 @@ let bearVoice;
 let rabbitVoice;
 let catVoice;
 let copyVoice;
+let goodSound;
 
 let saying = false;
 
@@ -180,6 +181,7 @@ function preload() {
   catVoice = loadSound("assets/catVoice.mp3");
   hmmSound = loadSound("assets/hmmSound.mp3");
   count = loadSound("assets/count.mp3");
+  goodSound = loadSound("assets/goodEffect.wav");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
@@ -551,9 +553,11 @@ function draw() {
         case 7: // 엔딩 화면
           displayEndingScreen(); // 최종 점수 표시
           // 5초 후 다음 스테이지로 이동
+          /*
           if (frameCount % 300 === 0) {
             currentStage++; // 다음 스테이지로 이동
           }
+            */
           break;
       }
       break;

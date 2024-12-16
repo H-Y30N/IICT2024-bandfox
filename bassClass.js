@@ -128,7 +128,7 @@ function displayEndingScreen() {
     isDisplaying = false;
   } else {
   }
-  image(bassIntroImage, width / 2, height / 2);
+  image(bassIntroImage, 0, 0);
   //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
   //console.log(currentDialogueIndex);
 
@@ -136,8 +136,8 @@ function displayEndingScreen() {
   //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
   //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
   if (currentDialogueIndex <= 0) {
-    image(dialogueFox, width / 2, height / 2);
-  } else image(dialogueCopy, width / 2, height / 2);
+    image(dialogueFox, 0, 0);
+  } else image(dialogueCopy, 0, 0);
   textSize(18);
   textFont(choice);
   fill(0);
@@ -185,7 +185,7 @@ function displayEndingScreen() {
   ) {
     if (currentDialogueIndex <= 0) {
       foxVoice.play();
-    } else CopyVoice.play();
+    } else copyVoice.play();
     soundPlayed = true; // 소리 재생 여부 설정
   }
 
