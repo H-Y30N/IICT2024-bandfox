@@ -67,7 +67,7 @@ let drumDifferent = 0;
 
 //베이스 관련 전역변수
 let notes = [];
-let strings = [100, 200, 300, 400]; // 줄의 위치 (y좌표)
+let strings = [120, 200, 300, 400]; // 줄의 위치 (y좌표)
 let bassScore = 0;
 let bassLevel = 0;
 let missedNotes = 0; // 놓친 노트 개수
@@ -76,7 +76,7 @@ let bassEx; //베이스 게임 설명 이미지
 let feedbackText = "";
 let feedbackTimer = 0;
 let gameTimer = 0;
-let gameDuration = 3600;
+let gameDuration = 2400;
 
 //키보드 관련 전역변수
 let score = 0;
