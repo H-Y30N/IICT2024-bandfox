@@ -49,7 +49,7 @@ let bearVoice;
 let rabbitVoice;
 let catVoice;
 let copyVoice;
-let goodSound;
+let bassSlap;
 
 let saying = false;
 
