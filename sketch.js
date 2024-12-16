@@ -907,16 +907,16 @@ function draw() {
 
     case 13: // how to play guitar
       image(backgroundImage, 0, 0);
-      image(guitarEntireImage, 0, height / 2 - 200);
+      //image(guitarEntireImage, 0, height / 2 - 200);
       textSize(24);
       textAlign(CENTER, CENTER);
       fill(255);
       stroke(90);
       strokeWeight(3);
       text(
-        "카메라를 봐,\n네 손으로 연주하는 거야! \n\n준비되면 →를 눌러!",
+        "카메라를 봐,\n네 손으로 연주하는 거야! \n준비되면 ENTER를 눌러!",
         width / 2,
-        height / 2 - 30
+        height / 2 - 50
       );
       image(handHere, width / 2 - 200, height / 2);
       // 손 데이터 필터링 (lerp 적용)
@@ -960,10 +960,11 @@ function draw() {
             let xPos = keypoint.x; // 비디오 좌표계
             let yPos = keypoint.y;
 
-            vertex(xPos, yPos);
+            curveVertex(xPos, yPos);
 
             // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
             if (j === 8) {
+              imageMode(CENTER);
               image(guitarPick, xPos, yPos);
             }
           }
@@ -974,10 +975,7 @@ function draw() {
 
       break;
 
-    case 14: //guitar game
-      image(backgroundImage, 0, 0); //일반 배경
-      image(guitarRect, 0, 100); // 기타 배경 삽입
-
+    case 14: //guitar game  
       if (!startTimeOfguitar) {
         startTimeOfguitar = millis(); // 게임 시작 시 시간을 초기화
       }
@@ -1003,6 +1001,8 @@ function draw() {
       translate(width, 0);
       scale(-1, 1);
 
+      image(video,0,0);
+
       for (let i = 0; i < filteredHands.length; i++) {
         let hand = filteredHands[i];
 
@@ -1023,10 +1023,11 @@ function draw() {
             let xPos = keypoint.x; // 비디오 좌표계
             let yPos = keypoint.y;
 
-            vertex(xPos, yPos);
+            curveVertex(xPos, yPos);
 
             // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
             if (j === 8) {
+              imageMode(CENTER);
               image(guitarPick, xPos, yPos);
             }
           }
@@ -1035,6 +1036,7 @@ function draw() {
       }
       pop();
 
+    
       // 시간 체크
       let elapsedTime = (millis() - startTimeOfguitar) / 1000;
 
@@ -1051,7 +1053,6 @@ function draw() {
         return; // 5초가 지나기 전에는 아래 코드를 실행하지 않음
       }
 
-      image(backgroundImage, 0, 0); //일반 배경
       image(guitarRect, 0, 100); // 기타 배경 삽입
 
       let gameElapsedTime = elapsedTime - 5; // 5초 대기 시간을 제외한 실제 게임 시간
@@ -1099,7 +1100,7 @@ function draw() {
                 ) {
                   pointOfGuitar++; // 점수 증가
                   scoreIncrementedRects[k] = true; // 점수 증가 플래그 설정
-                  rectData.color = color(0, 0, 255); // 파란색으로 변경
+                  rectData.color = color(0, 0, 255, 150); // 파란색으로 변경
                   rectData.blinkCount = 60; // 깜빡임 카운트 설정
                 }
               }
@@ -1108,15 +1109,6 @@ function draw() {
         }
       }
 
-      // 기타 줄 그리기
-      noFill();
-      stroke(0); // 검정색 줄
-      strokeWeight(10);
-      for (let x = 5; x <= width; x += guitarWidth) {
-        for (let y = 100 + 70; y < height; y += guitarHeight) {
-          rect(x, y, guitarWidth, guitarHeight);
-        }
-      }
 
       // 손 데이터 필터링 (lerp 적용)
       filteredHands = hands.map((hand) => {
@@ -1138,7 +1130,24 @@ function draw() {
       push();
       translate(width, 0);
       scale(-1, 1);
+      image(video,0,0);//화면
+      pop();
 
+      image(guitarRect, 0, 100);
+
+      // 기타 줄 그리기
+      noFill();
+      stroke(0); // 검정색 줄
+      strokeWeight(10);
+      for (let x = 5; x <= width; x += guitarWidth) {
+        for (let y = 100 + 70; y < height; y += guitarHeight) {
+          rect(x, y, guitarWidth, guitarHeight);
+        }
+      }
+      
+      push();
+      translate(width,0);
+      scale(-1,1);
       for (let i = 0; i < filteredHands.length; i++) {
         let hand = filteredHands[i];
 
@@ -1159,10 +1168,11 @@ function draw() {
             let xPos = keypoint.x; // 비디오 좌표계
             let yPos = keypoint.y;
 
-            vertex(xPos, yPos);
+            curveVertex(xPos, yPos);
 
             // 두 번째 손가락(검지손가락)에 기타피크 이미지 표시
             if (j === 8) {
+              imageMode(CENTER);
               image(guitarPick, xPos, yPos);
             }
           }

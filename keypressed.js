@@ -1,4 +1,8 @@
 function keyPressed() {
+  if(keyCode == 27){ //ESC를 누르면
+    stage = 13;
+  }
+
   let keyMap = {
     9: 0, // 첫 번째 줄
     i: 1, // 두 번째 줄
@@ -67,7 +71,7 @@ function keyPressed() {
     }
   }
 
-  console.log(pianoUser.pressedKeys);
+  //console.log(pianoUser.pressedKeys);
 
   //키보드 무엇이 눌리냐에 따라 건반을 바꿔준다.
   if (!wait) {
