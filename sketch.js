@@ -70,6 +70,11 @@ let bassLevel = 0;
 let missedNotes = 0; // 놓친 노트 개수
 let retryLevel = 0; // 실패한 레벨을 기억하는 변수
 let bassEx; //베이스 게임 설명 이미지
+let feedbackText = "";
+let feedbackTimer = 0;
+let gameTimer = 0;
+let gameDuration = 3600;
+
 
 //키보드 관련 전역변수
 let score = 0;
@@ -511,32 +516,30 @@ function draw() {
     
           // 스페이스바 입력으로 게임 시작
           if (keyIsPressed && keyCode === 32) {
-            bassLevel = 2; // 레벨 1 시작
+            bassLevel = 4; // 레벨 2 시작
             resetLevel();
           }
           break;
     
-        case 2: // 레벨 1: 쉬운 난이도
+        /*case 2: // 레벨 1: 쉬운 난이도
           playLevel(100, 2, 1.3);
-          if (gameTimer > 600) { // 10초 후 레벨 업
+          if (gameTimer >= gameDuration) { // 10초 후 레벨 업
             bassLevel = 4; // 레벨 2로 이동
-            resetLevel();
+            
           }
-          break;
+          break;*/
     
         case 4: // 레벨 2: 중간 난이도
           playLevel(80, 3, 1.6);
-          if (gameTimer > 600) { // 10초 후 레벨 업
+          if (gameTimer >= 1800) { // 30초 후 레벨 업
             bassLevel = 6; // 레벨 3로 이동
-            resetLevel();
           }
           break;
     
         case 6: // 레벨 3: 어려운 난이도
           playLevel(60, 4, 2);
-          if (gameTimer > 600) { // 10초 후 게임 종료
+          if (gameTimer > gameDuration) { // 10초 후 게임 종료
             bassLevel = 7; // 엔딩 화면으로 이동
-            resetLevel();
           }
           break;
     
