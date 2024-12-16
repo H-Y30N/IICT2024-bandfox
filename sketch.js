@@ -75,7 +75,7 @@ let bassEx; //베이스 게임 설명 이미지
 let feedbackText = "";
 let feedbackTimer = 0;
 let gameTimer = 0;
-let gameDuration = 3600;
+let gameDuration = 2400;
 
 //키보드 관련 전역변수
 let score = 0;
