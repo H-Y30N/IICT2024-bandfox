@@ -517,7 +517,7 @@ function draw() {
       image(bassBackground, 0, 0);
       switch (bassLevel) {
         case 0: // 게임 오프닝 화면
-          strokeWeight(10);
+          strokeWeight(3);
           stroke(0);
           textAlign(CENTER, CENTER);
           textSize(30);
