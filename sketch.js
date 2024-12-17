@@ -62,7 +62,6 @@ let drumPractice; // 드럼 연습 이미지
 let drumPracticeStart;
 let drumPracticeComplete;
 let drumSize = false;
-
 let drumDifferent = 0;
 
 //베이스 관련 전역변수
@@ -108,6 +107,7 @@ let handHere; // 손 이미지
 let guitarRect; //기타 게임용 이미지
 let guitarEntireImage; //기타 전체 이미지
 let guitarEx; //기타 설명 이미지
+let guitarEffect; //기타 이펙트 소리
 
 let filteredHands = []; // 손 위치를 필터링한 데이터
 
@@ -183,6 +183,7 @@ function preload() {
   hmmSound = loadSound("assets/hmmSound.mp3");
   count = loadSound("assets/count.mp3");
   bassSlap = loadSound("assets/bassSlap2.wav");
+  guitarEffect = loadSound("assets/guitarEffect.wav");
 
   //bgm 관련 세팅
   bgm = loadSound("assets/bgm.mp3");
@@ -916,7 +917,7 @@ function draw() {
       text(
         "카메라를 봐,\n네 손으로 연주하는 거야! \n준비되면 ENTER를 눌러!",
         width / 2,
-        height / 2 - 50
+        height / 2 - 90
       );
       image(handHere, width / 2 - 200, height / 2);
       // 손 데이터 필터링 (lerp 적용)
@@ -1052,12 +1053,11 @@ function draw() {
         return; // 5초가 지나기 전에는 아래 코드를 실행하지 않음
       }
 
-      image(guitarRect, 0, 100); // 기타 배경 삽입
 
       let gameElapsedTime = elapsedTime - 5; // 5초 대기 시간을 제외한 실제 게임 시간
 
       // 스테이지 변경 조건
-      if (pointOfGuitar >= 20 || gameElapsedTime >= 30) {
+      if (gameElapsedTime >= 30) {
         stage = 15;
         return;
       }
@@ -1101,6 +1101,8 @@ function draw() {
                   scoreIncrementedRects[k] = true; // 점수 증가 플래그 설정
                   rectData.color = color(0, 0, 255, 150); // 파란색으로 변경
                   rectData.blinkCount = 60; // 깜빡임 카운트 설정
+                  
+                  guitarEffect.play(); //기타 소리 나기 
                 }
               }
             }
@@ -1131,7 +1133,7 @@ function draw() {
       image(video, 0, 0); //화면
       pop();
 
-      image(guitarRect, 0, 100);
+      image(guitarRect, 0, 110);
 
       // 기타 줄 그리기
       noFill();
@@ -1202,7 +1204,7 @@ function draw() {
       textSize(24);
       textAlign(LEFT, TOP);
       text("Score: " + pointOfGuitar, 10, 10);
-      text("Time: " + nf(35 - elapsedTime, 1, 1) + "s", width - 150, 40); // 남은 시간 표시
+      text("Time: " + nf(35 - elapsedTime, 1, 1) + "s", width - 160, 10); // 남은 시간 표시
       break;
 
     case 15: //guitar result
@@ -1212,9 +1214,9 @@ function draw() {
       //text("Game Over!", width / 2, height / 2 - 30);
       //text("Final Score: " + pointOfGuitar, width / 2, height / 2 + 30);
 
-      if (pointOfGuitar >= 20) guitarFinal = 10;
-      else if (pointOfGuitar < 20 && pointOfGuitar > 5) guitarFinal = 5;
-      else if (pointOfGuitar < 5) guitarFinal = 0;
+      if (pointOfGuitar >= 18) guitarFinal = 10;
+      else if (pointOfGuitar < 18 && pointOfGuitar > 8) guitarFinal = 5;
+      else if (pointOfGuitar < 8) guitarFinal = 0;
 
       //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
       //복사+붙여넣기 후, dialogues 안의 문구를 변경해 주세요.
