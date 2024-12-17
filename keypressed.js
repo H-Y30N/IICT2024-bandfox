@@ -1,6 +1,6 @@
 function keyPressed() {
   if(keyCode == 27){ //ESC를 누르면
-    stage = 13;
+    stage = 0;
   }
 
   let keyMap = {
