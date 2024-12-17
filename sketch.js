@@ -14,6 +14,12 @@ let drumFinal; //드럼 최종 스코어
 let bassFinal; //베이스 최종 스코어
 let keyboardFinal; //키보드 최종 스코어
 let guitarFinal; //기타 최종 스코어
+let bearResult = "";
+let copyResult = "";
+let rabbitResult = "";
+let catResult = "";
+let finalResult = [];
+let finalOut = [];
 
 //게임 중에는 넘어가지 않게 하는 boolean. 각 파이널 스코어가 정산되어야 엔터가 먹히게 합니다.
 let gaming = false;
@@ -33,6 +39,11 @@ let guitarCat; //고양이 이미지
 let backgroundImage; //기본 배경
 let everyone;
 let bassBackground;
+let lastFox;
+let lastCat;
+let lastBear;
+let lastRabbit;
+let lastCopy;
 
 //대사창 파일
 let dialogueFox;
@@ -139,6 +150,7 @@ function preload() {
   guitarEx = loadImage("assets/guitarEx.png");
   everyone = loadImage("assets/everyone.png");
   bassBackground = loadImage("assets/bassBackground.png");
+  ending = loadImage("assets/ending.png");
 
   drumPractice = loadImage("assets/drumPractice.png");
   drumPracticeStart = loadImage("assets/drumPracticeStart.png");
@@ -149,6 +161,12 @@ function preload() {
   dialogueCat = loadImage("assets/dialogueCat.png");
   dialogueCopy = loadImage("assets/dialogueCopy.png");
   dialogueRabbit = loadImage("assets/dialogueRabbit.png");
+
+  lastBear = loadImage("assets/lastBear.png");
+  lastFox = loadImage("assets/lastFox.png");
+  lastCat = loadImage("assets/lastCat.png");
+  lastCopy = loadImage("assets/lastCopy.png");
+  lastRabbit = loadImage("assets/lastRabbit.png");
 
   //loadfonts
   kossuyeom = loadFont("assets/kossuyeom.otf");
@@ -1213,6 +1231,7 @@ function draw() {
           "흠…….\n아주 마음에 들어!",
           "이런 리프라면 공연 30분 전에 연습 시작해도\n충분히 칠 수 있다고! 난 천재 락스타니까!",
           "그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+          "이제 슬슬 평가 받을 차례지, 후훗.",
         ];
       } else if (guitarFinal == 5) {
         dialogues = [
@@ -1220,6 +1239,7 @@ function draw() {
           "흠…….\n그냥저냥 들어줄 만하네. 조금 복잡한가?",
           "하지만 이 천재 락스타는 충분히 칠 수 있지.\n귀찮겠지만 연습은 해야겠네.",
           "그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+          "이제 슬슬 평가 받을 차례지, 후훗.",
         ];
       } else {
         dialogues = [
@@ -1227,6 +1247,7 @@ function draw() {
           "흠…….\n내가 분명 연습하기 귀찮다고 했을 텐데?",
           "밴드 자작곡을 쓰는 이유가 뭐라고 생각하는 거야?\n이 천재 락스타에게 맞춰주려고 그런 게 아니었어?",
           "에휴…….그럼 곡은 이걸로 완성인 건가?\n다른 애들한테도 들려줬어?",
+          "이제 슬슬 평가 받을 차례지, 후훗.",
         ];
       }
       //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
@@ -1258,56 +1279,290 @@ function draw() {
       break;
 
     case 16: // 최종 결과
-      bgm.stop();
-      bgmPlaying = false;
+      //이전에 사용하던 대사의 참조 인덱스를 초기화합니다.
 
+      if (typeof drumFinal == "undefined") drumFinal = 0;
+      if (typeof bassFinal == "undefined") bassFinal = 0;
+      if (typeof keyboardFinal == "undefined") keyboardFinal = 0;
+      if (typeof guitarFinal == "undefined") guitarFinal = 0;
+
+      if (drumFinal == 10) {
+        bearResult = "10점 만점에 10점.\n내가 원하던 박자를 제대로 구현해냈어!";
+      } else if (drumFinal == 5) {
+        bearResult = "뭐, 그냥, 그럭저럭 했네.";
+      } else if (drumFinal == 0) {
+        bearResult =
+          "너는 밴드맨 실격이야. 박자를 받아들이는 감각이 엉망이라고!\n나 이런 프론트맨이랑은 일 못 해!";
+      }
+
+      if (bassFinal == 10) {
+        copyResult = "내가 원하던 바로 그 베이스 라인이야!";
+      } else if (bassFinal == 5) {
+        copyResult = "이 정도면 나름 준수하지!";
+      } else if (bassFinal == 0) {
+        copyResult =
+          "베이스 소리를 잘 들려주고 싶다는 게 그렇게 문제였어?\n나 상처받았어 안 할래…….";
+      }
+
+      if (keyboardFinal == 10) {
+        rabbitResult =
+          "이 정도면 믿고 내 파트를 맡겨도 되겠는걸?\n나는 그 동안 일광욕 하러 가면 되는 거고.";
+      } else if (keyboardFinal == 5) {
+        rabbitResult = "뭐…… 악보만 제때 보내주면 충분히 감당 가능한 멜로디지.";
+      } else if (keyboardFinal == 0) {
+        rabbitResult =
+          "이건 너무 복잡해!\n내 취미를 배려해주지 않는 프론트맨은 필요 없어!";
+      }
+
+      if (guitarFinal == 10) {
+        catResult =
+          "역시 천재 락스타 고양이님의 동료답다구!\n난 이런 리프가 좋더라.";
+      } else if (guitarFinal == 5) {
+        catResult = "살짝 서투르긴 하지만 이 정도는 양해해주지.";
+      } else if (guitarFinal == 0) {
+        catResult =
+          "흥, 곡이 마음에 안 들어.\n넌 천재 락스타와 함께 할 자격이 없다!";
+      }
+
+      if (keyboardFinal + guitarFinal + bassFinal + drumFinal >= 30) {
+        finalResult = [
+          "그렇게 우리는 전설의 밴드가 됐어.\n내가 쓴 곡에 모두가 환호했고, 밴드의 합에 다들 열광했지.",
+          "곡을 쓸 때 도와준 덕분에 이렇게 잘 될 수 있었어, 고마워!",
+          "다음 번에 월드 투어를 할 때 전용기를 대절해서 초대해줄게.\n그때까지 우리 음악 잘 들어줘야 해?",
+          "",
+        ];
+      } else if (
+        keyboardFinal + guitarFinal + bassFinal + drumFinal < 30 &&
+        keyboardFinal + guitarFinal + bassFinal + drumFinal >= 15
+      ) {
+        finalResult = [
+          "뭐, 뻔한 결과야.\n흔하디 흔한 언더그라운드 밴드로 데뷔했지.",
+          "대성공은 아니지만 이런 삶도 나름대로 락스타라고 할 수 있을 거야.\n음악을 즐길 줄 알면 그거야말로 락이니까 말이야!",
+          "다음 번에 공연을 할 때는 너에게도 표를 전해 줄게.\n보러 올 거지?",
+          "",
+        ];
+      } else if (keyboardFinal + guitarFinal + bassFinal + drumFinal < 15) {
+        finalResult = [
+          "음, 결론부터 말하자면…….\n우리는 밴드를 대차게 말아먹었어.",
+          "어쩔 수 없지! 괜찮아, 아티스트에겐 흔한 일이니까.\n다들 뿔뿔이 흩어졌지만, 알아서 씩씩하게 살고 있을 게 분명해.",
+          "그래도, 조금은 미련이 남는 건 어쩔 수가 없네…….",
+          "",
+        ];
+      }
+      if (
+        keyboardFinal == 0 ||
+        guitarFinal == 0 ||
+        bassFinal == 0 ||
+        drumFinal == 0
+      ) {
+        finalOut = [
+          "물론 그 곡을 듣고 대차게 도망가버린 몇몇도 존재하긴 하지만, 뭐 어때.\n원래 밴드는 해체 한 번 쯤은 해보는 게 간지라더라.",
+          "새 동물을 구하는 게 쉽진 않았지만 어떻게든 해내긴 했어.",
+        ];
+      }
+
+      if (currentDialogueIndex >= dialogues.length && !isDisplaying) {
+        currentDialogueIndex = 0;
+        isDisplaying = false;
+      } else {
+      }
       imageMode(CORNER);
-      image(scoreImage, 0, 0);
-      strokeWeight(0);
-      textSize(10);
-      fill(200);
-      text(drumFinal, 327, 145);
-      text(bassFinal, 618, 237);
-      text(keyboardFinal, 480, 231);
-      text(guitarFinal, 549, 250);
-      if (!songPlay) {
-        songPlay = true;
-        if (realGame.averageBPM >= 230) {
-          //만약 드럼을 빠르게 쳤다면
-          if (pointOfGuitar >= 10 && score >= 50 && bassFinal < 5)
-            song[0].play();
-          else if (pointOfGuitar >= 10 && score >= 50 && bassFinal >= 5)
-            song[1].play();
-          else if (pointOfGuitar >= 10 && score < 50 && bassFinal < 5)
-            song[2].play();
-          else if (pointOfGuitar >= 10 && score < 50 && bassFinal >= 5)
-            song[3].play();
-          else if (pointOfGuitar < 10 && score >= 50 && bassFinal < 5)
-            song[4].play();
-          else if (pointOfGuitar < 10 && score >= 50 && bassFinal >= 5)
-            song[5].play();
-          else if (pointOfGuitar < 10 && score < 50 && bassFinal < 5)
-            song[6].play();
-          else if (pointOfGuitar < 10 && score < 50 && bassFinal >= 5)
-            song[7].play();
-        } else if (realGame.averageBPM < 230) {
-          //만약 드럼을 느리게 쳤다면
-          if (pointOfGuitar >= 10 && score >= 50 && bassFinal < 5)
-            song[8].play();
-          else if (pointOfGuitar >= 10 && score >= 50 && bassFinal >= 5)
-            song[9].play();
-          else if (pointOfGuitar >= 10 && score < 50 && bassFinal < 5)
-            song[10].play();
-          else if (pointOfGuitar >= 10 && score < 50 && bassFinal >= 5)
-            song[11].play();
-          else if (pointOfGuitar < 10 && score >= 50 && bassFinal < 5)
-            song[12].play();
-          else if (pointOfGuitar < 10 && score >= 50 && bassFinal >= 5)
-            song[13].play();
-          else if (pointOfGuitar < 10 && score < 50 && bassFinal < 5)
-            song[14].play();
-          else if (pointOfGuitar < 10 && score < 50 && bassFinal >= 5)
-            song[15].play();
+      image(gameIntroImage, 0, 0);
+
+      if (currentDialogueIndex >= 6 && currentDialogueIndex <= 10) {
+        imageMode(CORNER);
+        image(scoreImage, 0, 0);
+        strokeWeight(0);
+        textSize(10);
+        fill(200);
+        text(drumFinal, 327, 145);
+        text(bassFinal, 618, 237);
+        text(keyboardFinal, 480, 231);
+        text(guitarFinal, 549, 250);
+      }
+      if (currentDialogueIndex >= 10) {
+        imageMode(CORNER);
+        image(backgroundImage, 0, 0);
+        image(lastFox, 0, 0);
+        if (drumFinal != 0) image(lastBear, 0, 0);
+        if (bassFinal != 0) image(lastCopy, 0, 0);
+        if (guitarFinal != 0) image(lastCat, 0, 0);
+        if (keyboardFinal != 0) image(lastRabbit, 0, 0);
+      }
+
+      //디버깅용. 위의 인덱스 초기화를 확인하기 위해 사용했습니다.
+      //console.log(currentDialogueIndex);
+
+      //여기에 해당 스테이지의 대사를 나열해주시면 됩니다.
+      //그림과 겹치지 않게 줄바꿈을 해주세요. (\n을 사용합니다.)
+      //줄바꿈 직후에 스페이스바가 있다면 정렬이 깨지니 유의해주세요.
+      if (currentDialogueIndex < 5) image(dialogueFox, 0, 0);
+      else if (currentDialogueIndex == 5) image(dialogueFox, 0, 0);
+      else if (currentDialogueIndex == 6) image(dialogueBear, 0, 0);
+      else if (currentDialogueIndex == 7) image(dialogueRabbit, 0, 0);
+      else if (currentDialogueIndex == 8) image(dialogueCat, 0, 0);
+      else if (currentDialogueIndex == 9) image(dialogueCopy, 0, 0);
+      else if (currentDialogueIndex >= 10) image(dialogueFox, 0, 0);
+      textSize(18);
+      fill(0);
+      textFont(choice);
+      dialogues = [
+        "아, 이제 막 곡이 완성됐어!\n도와줘서 고마워!",
+        "자, 얘들아. 이게 우리 밴드의 곡이 될 거야!\n한 번 합을 맞춰볼까?",
+        "하나,\n둘,",
+        "하나, 둘, 셋, 넷!",
+        "",
+        "어때? 마음에 들어?",
+        bearResult,
+        rabbitResult,
+        catResult,
+        copyResult,
+      ];
+      // 배열의 각 요소를 result 배열에 문자열로 추가
+      for (let i = 0; i < finalOut.length; i++) {
+        dialogues.push(finalOut[i]);
+      }
+      for (let i = 0; i < finalResult.length; i++) {
+        dialogues.push(finalResult[i]);
+      }
+
+      //첫 대사는 엔터키 입력(bassClass에서 담당) 없이도 출력되게 합니다.
+      if (currentDialogueIndex == 0) {
+        text(dialogues[0], width / 2, height - 70);
+        //첫 대사가 아니라면 엔터키를 누를 때마다 다음 배열의 대사를 업데이트합니다.
+      } else text(displayedText, width / 2, height - 70);
+
+      if (
+        currentDialogueIndex >= 0 &&
+        currentCharIndex % 9 === 0 &&
+        currentCharIndex < dialogues[currentDialogueIndex].length &&
+        keyCode == ENTER &&
+        !soundPlayed // 이미 재생된 경우 방지
+      ) {
+        if (currentDialogueIndex <= 5 || currentDialogueIndex >= 10) {
+          foxVoice.play();
+          soundPlayed = true; // 소리 재생 여부 설정}
+        } else if (currentDialogueIndex == 6) {
+          bearVoice.play();
+          soundPlayed = true; // 소리 재생 여부 설정}
+        } else if (currentDialogueIndex == 7) {
+          rabbitVoice.play();
+          soundPlayed = true; // 소리 재생 여부 설정}
+        } else if (currentDialogueIndex == 8) {
+          catVoice.play();
+          soundPlayed = true; // 소리 재생 여부 설정}
+        } else if (currentDialogueIndex == 9) {
+          copyVoice.play();
+          soundPlayed = true; // 소리 재생 여부 설정}
+        }
+      }
+
+      // 조건이 변할 때 플래그 초기화
+      if (currentCharIndex % 9 !== 0 || keyCode !== ENTER) {
+        soundPlayed = false; // 다시 재생 가능하도록 초기화
+      }
+
+      if (currentDialogueIndex == 4) {
+        bgm.stop();
+        bgmPlaying = false;
+        image(ending, 0, 0);
+
+        if (!songPlay) {
+          songPlay = true;
+          if (realGame.averageBPM >= 230) {
+            //만약 드럼을 빠르게 쳤다면
+            if (pointOfGuitar >= 10 && score >= 50 && bassFinal < 5)
+              song[0].play();
+            else if (pointOfGuitar >= 10 && score >= 50 && bassFinal >= 5)
+              song[1].play();
+            else if (pointOfGuitar >= 10 && score < 50 && bassFinal < 5)
+              song[2].play();
+            else if (pointOfGuitar >= 10 && score < 50 && bassFinal >= 5)
+              song[3].play();
+            else if (pointOfGuitar < 10 && score >= 50 && bassFinal < 5)
+              song[4].play();
+            else if (pointOfGuitar < 10 && score >= 50 && bassFinal >= 5)
+              song[5].play();
+            else if (pointOfGuitar < 10 && score < 50 && bassFinal < 5)
+              song[6].play();
+            else if (pointOfGuitar < 10 && score < 50 && bassFinal >= 5)
+              song[7].play();
+          } else if (realGame.averageBPM < 230) {
+            //만약 드럼을 느리게 쳤다면
+            if (pointOfGuitar >= 10 && score >= 50 && bassFinal < 5)
+              song[8].play();
+            else if (pointOfGuitar >= 10 && score >= 50 && bassFinal >= 5)
+              song[9].play();
+            else if (pointOfGuitar >= 10 && score < 50 && bassFinal < 5)
+              song[10].play();
+            else if (pointOfGuitar >= 10 && score < 50 && bassFinal >= 5)
+              song[11].play();
+            else if (pointOfGuitar < 10 && score >= 50 && bassFinal < 5)
+              song[12].play();
+            else if (pointOfGuitar < 10 && score >= 50 && bassFinal >= 5)
+              song[13].play();
+            else if (pointOfGuitar < 10 && score < 50 && bassFinal < 5)
+              song[14].play();
+            else if (pointOfGuitar < 10 && score < 50 && bassFinal >= 5)
+              song[15].play();
+          }
+        }
+      }
+
+      if (
+        keyboardFinal == 0 ||
+        guitarFinal == 0 ||
+        bassFinal == 0 ||
+        drumFinal == 0
+      ) {
+        if (currentDialogueIndex >= 15) {
+          image(backgroundImage, 0, 0);
+          textAlign(CENTER, CENTER);
+          textSize(49);
+          stroke(255);
+          strokeWeight(8);
+          fill(116, 98, 69);
+          textFont(kossuyeom);
+          text("The End!", width / 2, height / 2 - 80);
+          textFont(choice);
+          textSize(24);
+          strokeWeight(4);
+          text(
+            "Enter 혹은 ESC를 눌러 처음으로 돌아가세요.",
+            width / 2,
+            height / 2
+          );
+          textSize(16);
+          text(
+            "TIP: 게임 결과에 따라 엔딩에서 다른 곡을 만들 수 있습니다.",
+            width / 2,
+            height / 2 + 80
+          );
+        }
+      } else {
+        if (currentDialogueIndex >= 13) {
+          image(backgroundImage, 0, 0);
+          textAlign(CENTER, CENTER);
+          textSize(49);
+          stroke(255);
+          strokeWeight(8);
+          fill(116, 98, 69);
+          textFont(kossuyeom);
+          text("The End!", width / 2, height / 2 - 80);
+          textFont(choice);
+          textSize(24);
+          strokeWeight(4);
+          text(
+            "Enter 혹은 ESC를 눌러 처음으로 돌아가세요.",
+            width / 2,
+            height / 2
+          );
+          textSize(16);
+          text(
+            "TIP: 게임 결과에 따라 엔딩에서 다른 곡을 만들 수 있습니다.",
+            width / 2,
+            height / 2 + 80
+          );
         }
       }
   }
