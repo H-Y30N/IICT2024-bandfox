@@ -117,8 +117,8 @@ function displayEndingScreen() {
   //fill(255);
   //text("Your Score is", _width / 2, _height / 2 - 50);
   //text(`${finalScore}`, _width / 2, _height / 2);
-  if (finalScore >= 100) bassFinal = 10;
-  else if (finalScore >= 50) bassFinal = 5;
+  if (finalScore >= 60) bassFinal = 10;
+  else if (finalScore >= 30) bassFinal = 5;
   else bassFinal = 0;
 
   //캐릭터들의 대사(요구 포함)가 들어가는 씬마다 여기서부터 다시 주석이 등장하는 곳까지
@@ -213,7 +213,7 @@ class Note {
   }
 
   show() {
-    fill(this.hitEffect ? color('#00FFFF') : color('#ACE5EE')); // 맞춘 노트: 파란색, 기본: 빨간색
+    fill(this.hitEffect ? color("#00FFFF") : color("#ACE5EE")); // 맞춘 노트: 파란색, 기본: 빨간색
     ellipse(this.x, this.y, this.size);
     fill(255); // 텍스트 색상
     textSize(20);

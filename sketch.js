@@ -648,11 +648,11 @@ function draw() {
       switch (level) {
         case 1:
           fill(255);
-
-          fill(0);
+          strokeWeight(3);
+          stroke(102, 98, 91);
           textAlign(CENTER, CENTER);
-          text("R U READY?", _width / 2, _height / 2 - 10);
-          text("Press Space to start", _width / 2, _height / 2 + 10);
+          text("준비 됐어?", _width / 2, _height / 2 - 10);
+          text("시작하려면 Space를 눌러 보자!", _width / 2, _height / 2 + 10);
           textSize(10);
 
           //스페이스바 눌러서 시작
@@ -920,8 +920,8 @@ function draw() {
         height / 2 - 120
       );
 
-      image(handHere, width /2 - 200, height/2-30);
-      image(guitarPick, width/2 - 70, height/2- 70);
+      image(handHere, width / 2 - 200, height / 2 - 30);
+      image(guitarPick, width / 2 - 70, height / 2 - 70);
       // 손 데이터 필터링 (lerp 적용)
       filteredHands = hands.map((hand) => {
         return {
@@ -1052,12 +1052,9 @@ function draw() {
           width / 2,
           height / 2
         );
-        text(
-          "곧 게임이 시작돼!", width/2, 30
-        );
+        text("곧 게임이 시작돼!", width / 2, 30);
         return; // 5초가 지나기 전에는 아래 코드를 실행하지 않음
       }
-
 
       let gameElapsedTime = elapsedTime - 5; // 5초 대기 시간을 제외한 실제 게임 시간
 
@@ -1106,8 +1103,8 @@ function draw() {
                   scoreIncrementedRects[k] = true; // 점수 증가 플래그 설정
                   rectData.color = color(0, 0, 255, 150); // 파란색으로 변경
                   rectData.blinkCount = 60; // 깜빡임 카운트 설정
-                  
-                  guitarEffect.play(); //기타 소리 나기 
+
+                  guitarEffect.play(); //기타 소리 나기
                 }
               }
             }
@@ -1211,7 +1208,7 @@ function draw() {
       text("Score: " + pointOfGuitar, 10, 10);
       text("Time: " + nf(35 - elapsedTime, 1, 1) + "s", width - 160, 10); // 남은 시간 표시
       textAlign(CENTER, TOP);
-      text("빨간 곳을 \n 여러번 뜯어보자!", width/2, 10);
+      text("빨간 곳을 \n 여러번 뜯어보자!", width / 2, 10);
       break;
 
     case 15: //guitar result

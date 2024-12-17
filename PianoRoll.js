@@ -62,6 +62,53 @@ class PianoRoll {
       );
     }
 
+    //알파벳 글자
+    for (let i = 0; i <= this.space - 1; i++) {
+      textSize(this.w / 12);
+      if (i == 0)
+        text(
+          "A",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 1)
+        text(
+          "S",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 2)
+        text(
+          "D",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 3)
+        text(
+          "F",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 4)
+        text(
+          "G",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 5)
+        text(
+          "H",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+      if (i == 6)
+        text(
+          "J",
+          (this.w / this.space) * i + this.w / this.space / 4,
+          this.h - this.h / 10
+        );
+    }
+
     pop();
   }
 
@@ -84,14 +131,6 @@ class PianoRoll {
     strokeWeight(0);
 
     for (let i = 0; i < this.space; i++) {
-      text("A", 310, 430);
-      text("S", 355, 430);
-      text("D", 400, 430);
-      text("F", 440, 430);
-      text("G", 485, 430);
-      text("H", 530, 430);
-      text("J", 575, 430);
-
       if (
         this.key === i &&
         !isKeyHandled &&
