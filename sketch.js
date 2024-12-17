@@ -915,11 +915,13 @@ function draw() {
       stroke(90);
       strokeWeight(3);
       text(
-        "카메라를 봐,\n네 손으로 연주하는 거야! \n준비되면 ENTER를 눌러!",
+        "카메라에 손을 대봐\n기타 피크로 연주하는 거야! \n준비되면 ENTER를 눌러!",
         width / 2,
-        height / 2 - 90
+        height / 2 - 120
       );
-      image(handHere, width / 2 - 200, height / 2);
+
+      image(handHere, width /2 - 200, height/2-30);
+      image(guitarPick, width/2 - 70, height/2- 70);
       // 손 데이터 필터링 (lerp 적용)
       filteredHands = hands.map((hand) => {
         return {
