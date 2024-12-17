@@ -6,6 +6,7 @@ class Snare {
     this.h = snareImage.height;
     this.originalW = snareImage.width;
     this.originalH = snareImage.height;
+    this.textScale = 1
   }
 
   display() {
@@ -13,28 +14,24 @@ class Snare {
     image(snareImage, this.x, this.y, this.w, this.h); // 이미지 그리기
 
     textAlign(CENTER, CENTER);
-    if (drumSize) {
-      textSize(40);
-      fill(159, 254, 241);
-    } else {
-      textSize(35);
-      fill(255);
-    }
-    stroke(130, 100, 81);
-    strokeWeight(4);
-    text("SPACE", width / 2, 420);
+    textSize(35 * this.textScale);
+    fill(255);
+    stroke(0);
+    strokeWeight(2 * this.textScale);
+    text("SPACE", width/2, 420);
   }
 
   enlarge(factor) {
-    drumSize = true;
     this.w *= factor;
     this.h *= factor;
+    this.textScale *= factor;
   }
 
   resetSize() {
     drumSize = false;
     this.w = this.originalW;
     this.h = this.originalH;
+    this.textScale = 1;
   }
 }
 
