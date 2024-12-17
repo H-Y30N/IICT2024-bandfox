@@ -17,7 +17,7 @@ function generateRects() {
     let x = 5 + col * guitarWidth; // 기타의 열에 맞춘 x 좌표
     let y = 100 + 70 + row * guitarHeight; // 기타의 줄에 맞춘 y 좌표
 
-    rects.push({ x: x, y: y, color: color(255, 0, 0), blinkCount: 0 });
+    rects.push({ x: x, y: y, color: color(255, 0, 0, 120), blinkCount: 0 });
     scoreIncrementedRects.push(false);
   }
 }
