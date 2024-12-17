@@ -1052,6 +1052,9 @@ function draw() {
           width / 2,
           height / 2
         );
+        text(
+          "곧 게임이 시작돼!", width/2, 30
+        );
         return; // 5초가 지나기 전에는 아래 코드를 실행하지 않음
       }
 
@@ -1207,6 +1210,8 @@ function draw() {
       textAlign(LEFT, TOP);
       text("Score: " + pointOfGuitar, 10, 10);
       text("Time: " + nf(35 - elapsedTime, 1, 1) + "s", width - 160, 10); // 남은 시간 표시
+      textAlign(CENTER, TOP);
+      text("빨간 곳을 \n 여러번 뜯어보자!", width/2, 10);
       break;
 
     case 15: //guitar result
