@@ -235,47 +235,7 @@ function draw() {
       textFont(choice);
       text("계속하려면 ENTER 키를 누르세요.", 150, height / 2 - 20);
 
-      //BGM 플레이 코드 (추가)
-      if (!bgmPlaying) {
-        bgm.loop();
-        bgm.amp(env);
-        env.triggerAttack();
-        bgmPlaying = true;
-      }
-      if (
-        drumFinal !== undefined &&
-        bassFinal !== undefined &&
-        keyboardFinal !== undefined &&
-        guitarFinal !== undefined
-      ) {
-        //점수 초기화
-        drumFinal = undefined;
-        bassFinal = undefined;
-        keyboardFinal = undefined;
-        guitarFinal = undefined;
-        isInPracticeMode = true;
-        hands = []; // 손 데이터 저장
-        scoreIncrementedRects = []; // 점수 증가 여부 체크 배열
-        pointOfGuitar = 0; // 점수
-        rects = []; // 빨간 네모들의 정보 저장
-        score = 0;
-        level = 1;
-        newLevel = false;
-        _width = 640;
-        _height = 480;
-        piano = [];
-        img = [];
-        timeOK = false;
-        scoreNum = 0;
-        wait = false;
-        notes = [];
-        bassScore = 0;
-        bassLevel = 0;
-        missedNotes = 0; // 놓친 노트 개수
-        retryLevel = 0; // 실패한 레벨을 기억하는 변수
-        drumPracticeStart;
-        drumPracticeComplete;
-      }
+      initializeScene();
 
       sceneChange = true;
 
