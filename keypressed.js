@@ -78,13 +78,13 @@ function keyPressed() {
 
   //키보드 무엇이 눌리냐에 따라 건반을 바꿔준다.
   if (!wait) {
-    if (keyCode === 65) pianoUser.key = 0;//A
-    else if (keyCode ===83) pianoUser.key = 1;//S
-    else if (keyCode === 68) pianoUser.key = 2;//D
-    else if (keyCode === 70) pianoUser.key = 3;//F
-    else if (keyCode === 71) pianoUser.key = 4;//G
-    else if (keyCode === 72) pianoUser.key = 5;//H
-    else if (keyCode === 74) pianoUser.key = 6;//J
+    if (keyCode === 65) pianoUser.key = 0; //A
+    else if (keyCode === 83) pianoUser.key = 1; //S
+    else if (keyCode === 68) pianoUser.key = 2; //D
+    else if (keyCode === 70) pianoUser.key = 3; //F
+    else if (keyCode === 71) pianoUser.key = 4; //G
+    else if (keyCode === 72) pianoUser.key = 5; //H
+    else if (keyCode === 74) pianoUser.key = 6; //J
     else pianoUser.key = -1;
   } else return;
 
