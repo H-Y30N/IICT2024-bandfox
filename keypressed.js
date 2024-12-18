@@ -66,7 +66,7 @@ function keyPressed() {
         }
       }
     }
-  } else if (key === "s" || key === "S") {
+  } else if (keyCode == 83) {
     if (practiceGame.isPracticeOver) {
       isInPracticeMode = false; // 실전 모드로 전환
       realGame.pressedTimes = [];
@@ -78,13 +78,13 @@ function keyPressed() {
 
   //키보드 무엇이 눌리냐에 따라 건반을 바꿔준다.
   if (!wait) {
-    if (key === "a" || key === "A") pianoUser.key = 0;
-    else if (key === "s" || key === "S") pianoUser.key = 1;
-    else if (key === "d" || key === "D") pianoUser.key = 2;
-    else if (key === "f" || key === "F") pianoUser.key = 3;
-    else if (key === "g" || key === "G") pianoUser.key = 4;
-    else if (key === "h" || key === "H") pianoUser.key = 5;
-    else if ((key === "j") | (key === "J")) pianoUser.key = 6;
+    if (keyCode == 65) pianoUser.key = 0;
+    else if (keyCode == 83) pianoUser.key = 1;
+    else if (keyCode == 68) pianoUser.key = 2;
+    else if (keyCode == 70) pianoUser.key = 3;
+    else if (keyCode == 71) pianoUser.key = 4;
+    else if (keyCode == 72) pianoUser.key = 5;
+    else if (keyCode == 74) pianoUser.key = 6;
     else pianoUser.key = -1;
   } else return;
 
