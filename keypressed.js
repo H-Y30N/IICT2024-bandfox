@@ -1,10 +1,11 @@
 function keyPressed() {
-  if (keyCode == 27) {
+  /* 오류가 난 초기화 로직 바꾸고 엔딩 텍스트도 거기에 맞춰 새로고침으로
+ if (keyCode == 27) {
     //ESC를 누르면
     dialogues = [];
     correct.play();
     stage = 0;
-  }
+  }*/
 
   let keyMap = {
     9: 0, // 첫 번째 줄
@@ -120,7 +121,7 @@ function keyPressed() {
       } else if (typeof bassFinal == "undefined" && stage == 7) {
       } else {
         correct.play();
-        stage = (stage + 1) % maxStage;
+        stage++;
       }
     }
   }

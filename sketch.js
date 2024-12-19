@@ -253,7 +253,7 @@ function draw() {
       textFont(choice);
       text("계속하려면 ENTER 키를 누르세요.", 150, height / 2 - 20);
 
-      initializeScene();
+      //initializeScene();
 
       sceneChange = true;
 
@@ -1525,10 +1525,10 @@ function draw() {
           textFont(kossuyeom);
           text("The End!", width / 2, height / 2 - 80);
           textFont(choice);
-          textSize(24);
+          textSize(20);
           strokeWeight(4);
           text(
-            "Enter 혹은 ESC를 눌러 처음으로 돌아가세요.",
+            "새로고침(Command+R 혹은 F5)을 눌러 처음으로 돌아가세요.",
             width / 2,
             height / 2
           );
